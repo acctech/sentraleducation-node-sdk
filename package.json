@@ -1,0 +1,34 @@
+{
+  "name": "sentraleducation-node-sdk",
+  "version": "1.0.2",
+  "description": "Sentral Node SDK Implementation of documentation http://development.sentral.com.au/",
+  "main": "./src/SentralSDK.js",
+  "homepage": "https://github.com/acctech/sentraleducation-node-sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acctech/sentraleducation-node-sdk.git"
+  },
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --detectOpenHandles",
+    "example": "node ./example/index.js"
+  },
+  "keywords": [
+    "node",
+    "js",
+    "sentral",
+    "education",
+    "sdk"
+  ],
+  "author": "Danny Falero (Software Engineer, CEM)",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "bottleneck": "^2.19.5",
+    "dotenv": "^10.0.0",
+    "request-promise": "^4.2.6",
+    "simple-object-to-json-cacher": "^1.0.2"
+  },
+  "devDependencies": {
+    "jest": "^27.0.4"
+  }
+}
