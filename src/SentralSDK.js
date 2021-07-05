@@ -32,7 +32,7 @@ export default function SentralSDK(auth) {
     const domain = auth.domain;
     let SDK = {};
     let ASSETSFOLDERPATH = null;
-    
+
     /**
      * Initiate SDK from Swagger.json documentation.
      * @param {String} assetsFolderPath optional, Folder to copy the output processed JSON to.
@@ -44,7 +44,7 @@ export default function SentralSDK(auth) {
         ASSETSFOLDERPATH = assetsFolderPath ?? "./assets";
         let sdkMetaCache = Cacher(ASSETSFOLDERPATH);
         try {
-            if(!fs.existsSync(path.join(ASSETSFOLDERPATH, "endpoints.json"))){
+            if (!fs.existsSync(path.join(ASSETSFOLDERPATH, "endpoints.json"))) {
                 generateEndpointsFile(Cacher(ASSETSFOLDERPATH), swaggerFolder);
             }
             let endpointMetaDataFull = sdkMetaCache.load("endpoints");
@@ -93,26 +93,29 @@ export default function SentralSDK(auth) {
             console.log("SDK Loaded");
             //Return this for chaining.
             return this;
-        } catch(err) {
+        } catch (err) {
             throw "Couldn't load endpoints to create SDK Meta";
         }
     }
     const helperFunctions = {
-        retrieveInsertsNames: function(endpointString){
+        retrieveInsertsNames: function (endpointString) {
             let inserts = endpointString.match(/{([^}]*)}/g);
-            if(inserts) {
+            if (inserts) {
                 inserts = inserts.map((insert) => insert.replace(/[{}]/g, ""));
             }
             return inserts;
         },
         processQueryParamaters: function (url, queryParametersObj) {
             let urlQueryParameters = "";
-            if(queryParametersObj) {
-                urlQueryParameters = "?";
+            if (queryParametersObj) {
                 for (const parametersKey in Object.keys(queryParametersObj)) {
+                    if (!urlQueryParameters.length === 0) {
+                        urlQueryParameters += "&";
+                    }
                     let queryPair = Object.keys(queryParametersObj)[parametersKey] + "=" + queryParametersObj[Object.keys(queryParametersObj)[parametersKey]];
                     urlQueryParameters += queryPair;
                 }
+                urlQueryParameters = "?" + urlQueryParameters;
             }
             //Make it Safe
             let encURI = encodeURI(url + urlQueryParameters);
@@ -184,29 +187,29 @@ export default function SentralSDK(auth) {
         }
     }
 
-    function getSDK(){
-        if(Object.entries(SDK).length === 0){
+    function getSDK() {
+        if (Object.entries(SDK).length === 0) {
             throw ("Cannot call SDK without first initiating SDK from swagger json file. Call initiateSDKFromAssetEndpointsFile(filename)");
         }
         return SDK;
     }
 
     // Convert Swagger to Endpoints File
-    function generateEndpointsFile(assetsCacher, folderPathOfSwaggerJSON){
+    function generateEndpointsFile(assetsCacher, folderPathOfSwaggerJSON) {
         let sentralSwagger = SwaggerFileImporter(folderPathOfSwaggerJSON);
         let sentralEndpoints = sentralSwagger.getEndpointFullDetails();
         assetsCacher.save("endpoints", sentralEndpoints);
     }
 
-    function saveSDKMeta(endpoints, SDK){
+    function saveSDKMeta(endpoints, SDK) {
         let sdkMetaCache = Cacher(ASSETSFOLDERPATH);
-        sdkMetaCache.save("META", {endpoints, SDK});
+        sdkMetaCache.save("META", { endpoints, SDK });
     }
-    function loadSDKMeta(){
+    function loadSDKMeta() {
         let sdkMetaCache = Cacher(ASSETSFOLDERPATH);
         return sdkMetaCache.load("META");
     }
-    function querySDKMeta(callback){
+    function querySDKMeta(callback) {
         callback(loadSDKMeta());
     }
 
