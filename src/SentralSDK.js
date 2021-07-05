@@ -109,7 +109,7 @@ export default function SentralSDK(auth) {
             let urlQueryParameters = "";
             if (queryParametersObj) {
                 for (const parametersKey in Object.keys(queryParametersObj)) {
-                    if (!urlQueryParameters.length === 0) {
+                    if (urlQueryParameters.length !== 0) {
                         urlQueryParameters += "&";
                     }
                     let queryPair = Object.keys(queryParametersObj)[parametersKey] + "=" + queryParametersObj[Object.keys(queryParametersObj)[parametersKey]];
