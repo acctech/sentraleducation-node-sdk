@@ -40,7 +40,7 @@ export default function SentralSDK(auth) {
      * @returns 
      */
     function initiateSDKFromSwaggerFile(swaggerFolder, assetsFolderPath) {
-        console.log("Initiating SDK");
+        //console.log("Initiating SDK");
         ASSETSFOLDERPATH = assetsFolderPath ?? "./assets";
         let sdkMetaCache = Cacher(ASSETSFOLDERPATH);
         try {
@@ -90,7 +90,7 @@ export default function SentralSDK(auth) {
             }
             //Save SDK meta.
             saveSDKMeta(endpoints, SDK);
-            console.log("SDK Loaded");
+            //console.log("SDK Loaded");
             //Return this for chaining.
             return this;
         } catch (err) {
