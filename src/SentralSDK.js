@@ -177,7 +177,7 @@ export default function SentralSDK(auth) {
             if (inserts) {
                 for (const insertsKey in inserts) {
                     //replace key with insert
-                    endpoint.replace("{" + insertsKey + "}", inserts[insertsKey]);
+                    endpoint = endpoint.replace("{" + insertsKey + "}", inserts[insertsKey]);
                 }
             }
             let url = domain + "/restapi" + endpoint;
