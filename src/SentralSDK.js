@@ -128,9 +128,6 @@ export default function SentralSDK(
     }
   }
 
-  // Initiating SDK from Swagger.json documentation.
-  initiateSDKFromSwaggerFile(swaggerFolder, assetsFolderPath, verbose);
-
   const helperFunctions = {
     retrieveInsertsNames: function (endpointString) {
       let inserts = endpointString.match(/{([^}]*)}/g);
@@ -259,6 +256,9 @@ export default function SentralSDK(
   function querySDKMeta(callback) {
     callback(loadSDKMeta());
   }
+
+  // Initiating SDK from Swagger.json documentation.
+  initiateSDKFromSwaggerFile(swaggerFolder, assetsFolderPath, verbose);
 
   return {
     getSDK,
