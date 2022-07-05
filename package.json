@@ -26,7 +26,7 @@
     "bottleneck": "^2.19.5",
     "dotenv": "^10.0.0",
     "request-promise": "^4.2.6",
-    "simple-object-to-json-cacher": "bitbucket:cemltd/simple-object-to-json-cacher"
+    "simple-object-to-json-cacher": "^1.0.3"
   },
   "devDependencies": {
     "jest": "^27.0.4"
