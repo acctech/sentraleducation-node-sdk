@@ -23,7 +23,12 @@ import SwaggerFileImporter from "./SwaggerFileImporter.js";
 import fs from "fs";
 import path from "path";
 
-export default function SentralSDK(auth) {
+export default function SentralSDK(
+  auth,
+  swaggerFolder,
+  assetsFolderPath,
+  verbose = false
+) {
   /**
    * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
    */
@@ -122,6 +127,10 @@ export default function SentralSDK(auth) {
       throw "Couldn't load endpoints to create SDK Meta";
     }
   }
+
+  // Initiating SDK from Swagger.json documentation.
+  initiateSDKFromSwaggerFile(swaggerFolder, assetsFolderPath, verbose);
+
   const helperFunctions = {
     retrieveInsertsNames: function (endpointString) {
       let inserts = endpointString.match(/{([^}]*)}/g);
@@ -252,7 +261,6 @@ export default function SentralSDK(auth) {
   }
 
   return {
-    initiateSDKFromSwaggerFile,
     getSDK,
     querySDKMeta,
   };
