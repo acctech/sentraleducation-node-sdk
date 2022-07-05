@@ -40,7 +40,7 @@ const requestObj = (url, apiToken, tenantCode, ca) => ({
 /**
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
-const fetchAll = (url, apiToken, tenantCode, result = [], verbose = false) =>
+const fetchAll = (url, apiToken, tenantCode, verbose = false, result = []) =>
   request(requestObj(url, apiToken, tenantCode)).then((response) => {
     if (response.body) {
       if (isIterable(response.body.data)) {
@@ -55,7 +55,7 @@ const fetchAll = (url, apiToken, tenantCode, result = [], verbose = false) =>
           if (verbose) {
             console.log(`Fetching ${links.next}`);
           }
-          return fetchAll(links.next, apiToken, tenantCode, result, verbose);
+          return fetchAll(links.next, apiToken, tenantCode, verbose, result);
         } else {
           if (verbose) {
             console.log(`Reached end of pagination.`);

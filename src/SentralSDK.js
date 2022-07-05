@@ -17,7 +17,7 @@
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
 
-import SentralFetch from "./SentralFetch.js";
+import SentralFetchRateLimited from "./SentralFetch.js";
 import Cacher from "simple-object-to-json-cacher";
 import SwaggerFileImporter from "./SwaggerFileImporter.js";
 import fs from "fs";
@@ -201,7 +201,7 @@ export default function SentralSDK(
       let url = domain + "/restapi" + endpoint;
       let uri = this.processQueryParamaters(url, extraParameters);
       //Execute call and return
-      return SentralFetch(uri, apiKey, tenantCode, isVERBOSE);
+      return SentralFetchRateLimited(uri, apiKey, tenantCode, isVERBOSE);
     },
     /**
      *
@@ -227,7 +227,7 @@ export default function SentralSDK(
       let url = domain + "/restapi" + endpoint;
       let uri = this.processQueryParamaters(url, extraParameters);
       //Execute call and return
-      return SentralFetch(uri, apiKey, tenantCode, isVERBOSE);
+      return SentralFetchRateLimited(uri, apiKey, tenantCode, isVERBOSE);
     },
   };
 
