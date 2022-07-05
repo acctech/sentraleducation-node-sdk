@@ -1,25 +1,27 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
-import SentralSDK from '../src/SentralSDK.js'
+import SentralSDK from "../src/SentralSDK.js";
 
-(function Program(){
-    getStudents();
+(function Program() {
+  getStudents();
 })();
 
-function getStudents(){
-    let SENTRAL_DOMAIN = process.env.SENTRAL_DOMAIN;
-    let SENTRAL_TENANT_SCHOOLCODE = process.env.SENTRAL_TENANT_SCHOOLCODE;
-    let SENTRAL_API_KEY = process.env.SENTRAL_API_KEY;
+function getStudents() {
+  let SENTRAL_DOMAIN = process.env.SENTRAL_DOMAIN;
+  let SENTRAL_TENANT_SCHOOLCODE = process.env.SENTRAL_TENANT_SCHOOLCODE;
+  let SENTRAL_API_KEY = process.env.SENTRAL_API_KEY;
 
-    let auth = {
-        sentralAPIKey: SENTRAL_API_KEY,
-        sentralTenantSchoolCode: SENTRAL_TENANT_SCHOOLCODE,
-        domain: SENTRAL_DOMAIN
-    }
+  let auth = {
+    sentralAPIKey: SENTRAL_API_KEY,
+    sentralTenantSchoolCode: SENTRAL_TENANT_SCHOOLCODE,
+    domain: SENTRAL_DOMAIN,
+  };
 
-    let pathToSwaggerJsonFile = "./";
-    let sentralSDK = SentralSDK(auth).initiateSDKFromSwaggerFile(pathToSwaggerJsonFile).getSDK();
-    sentralSDK.getEnrolmentsFlag().then((response)=>console.log(response.length));
+  let pathToSwaggerJsonFile = "./";
+  let sentralSDK = SentralSDK(auth, pathToSwaggerJsonFile).getSDK();
+  sentralSDK
+    .getEnrolmentsFlag()
+    .then((response) => console.log(response.length));
 }
 
 /**
