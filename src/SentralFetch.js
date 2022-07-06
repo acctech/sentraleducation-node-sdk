@@ -21,8 +21,8 @@ import request from "request-promise";
 import Bottleneck from "bottleneck";
 
 const limiter = new Bottleneck({
-  maxConcurrent: 100,
-  minTime: 2,
+  maxConcurrent: 200,
+  minTime: 1,
 });
 
 const requestObj = (url, apiToken, tenantCode, ca) => ({
