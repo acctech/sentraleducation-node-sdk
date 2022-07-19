@@ -10,7 +10,8 @@
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/.bin/jest --detectOpenHandles",
-    "example": "node ./example/index.js"
+    "example": "node ./example/index.js",
+    "deploylib": "npm version patch && npm publish"
   },
   "keywords": [
     "node",

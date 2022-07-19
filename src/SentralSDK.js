@@ -250,9 +250,11 @@ export default function SentralSDK(
     sdkMetaCache.save("META", { endpoints, SDK });
     // Write a common JS file that can be imported for reference.
     try {
-      let jsContent =
+      let cjsContent =
         "const SDK = " + JSON.stringify(SDK) + "; module.exports = SDK;";
-      fs.writeFileSync(path.join(ASSETSFOLDERPATH, "META.js"), jsContent);
+      fs.writeFileSync(path.join(ASSETSFOLDERPATH, "META.cjs"), cjsContent);
+      let esmContent = "export const SDK = " + JSON.stringify(SDK) + ";";
+      fs.writeFileSync(path.join(ASSETSFOLDERPATH, "META.esm.js"), esmContent);
     } catch (e) {
       console.log(e);
     }
