@@ -253,7 +253,7 @@ export default function SentralSDK(
       let cjsContent =
         "const SDK = " + JSON.stringify(SDK) + "; module.exports = SDK;";
       fs.writeFileSync(path.join(ASSETSFOLDERPATH, "META.cjs"), cjsContent);
-      let esmContent = "export const SDK = " + JSON.stringify(SDK) + ";";
+      let esmContent = "export default " + JSON.stringify(SDK) + ";";
       fs.writeFileSync(path.join(ASSETSFOLDERPATH, "META.esm.js"), esmContent);
     } catch (e) {
       console.log(e);
