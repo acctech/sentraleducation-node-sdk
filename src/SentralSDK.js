@@ -248,6 +248,14 @@ export default function SentralSDK(
   function saveSDKMeta(endpoints, SDK) {
     let sdkMetaCache = Cacher(ASSETSFOLDERPATH);
     sdkMetaCache.save("META", { endpoints, SDK });
+    // Write a common JS file that can be imported for reference.
+    try {
+      let jsContent =
+        "const SDK = " + JSON.stringify(SDK) + "; module.exports = SDK;";
+      fs.writeFileSync(path.join(ASSETSFOLDERPATH, "META.js"), jsContent);
+    } catch (e) {
+      console.log(e);
+    }
   }
   function loadSDKMeta() {
     let sdkMetaCache = Cacher(ASSETSFOLDERPATH);
