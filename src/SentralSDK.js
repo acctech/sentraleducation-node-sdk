@@ -148,6 +148,9 @@ export default function SentralSDK(
         });
         urlQueryParameters = urlQueryParameters.replace(/&$/, "");
       }
+      if (verbose) {
+        console.log("Query Parameter String:", urlQueryParameters);
+      }
       //Make it Safe
       let encURI = encodeURI(url + urlQueryParameters);
       return encURI;
