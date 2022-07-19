@@ -1,6 +1,6 @@
 {
   "name": "sentraleducation-node-sdk",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Sentral Node SDK Implementation of documentation http://development.sentral.com.au/",
   "main": "./src/SentralSDK.js",
   "homepage": "https://github.com/acctech/sentraleducation-node-sdk",
