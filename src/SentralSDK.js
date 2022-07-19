@@ -140,13 +140,15 @@ export default function SentralSDK(
       let urlQueryParameters = "";
       if (queryParametersObj) {
         urlQueryParameters = "?";
-        for (const parametersKey in Object.keys(queryParametersObj)) {
+        let parametersKeys = Object.keys(queryParametersObj);
+        parametersKeys.forEach(function (parametersKey, index) {
           let queryPair =
             Object.keys(queryParametersObj)[parametersKey] +
             "=" +
             queryParametersObj[Object.keys(queryParametersObj)[parametersKey]];
-          urlQueryParameters += queryPair;
-        }
+          urlQueryParameters += queryPair + "&";
+        });
+        urlQueryParameters = urlQueryParameters.slice(0, -1);
       }
       //Make it Safe
       let encURI = encodeURI(url + urlQueryParameters);
