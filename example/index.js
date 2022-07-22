@@ -20,7 +20,7 @@ function getStudents() {
   // Initiate the SDK (this will inflate the SDK from the
   // open api json from development.sentral.com.au)
   let pathToOpenAPIJsonFileFromSentral = "./";
-  let assetsFolder = "./";
+  let assetsFolder = "./assets";
   let sentralSDK = SentralSDK(
     auth,
     pathToOpenAPIJsonFileFromSentral,
