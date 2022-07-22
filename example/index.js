@@ -8,20 +8,52 @@ import SentralSDK from "../src/SentralSDK.js";
 
 function getStudents() {
   let SENTRAL_DOMAIN = process.env.SENTRAL_DOMAIN;
-  let SENTRAL_TENANT_SCHOOLCODE = process.env.SENTRAL_TENANT_SCHOOLCODE;
+  let SENTRAL_TENANT_KEY = process.env.SENTRAL_TENANT_KEY;
   let SENTRAL_API_KEY = process.env.SENTRAL_API_KEY;
 
   let auth = {
     sentralAPIKey: SENTRAL_API_KEY,
-    sentralTenantSchoolCode: SENTRAL_TENANT_SCHOOLCODE,
+    sentralTenantSchoolCode: SENTRAL_TENANT_KEY,
     domain: SENTRAL_DOMAIN,
   };
 
-  let pathToSwaggerJsonFile = "./";
-  let sentralSDK = SentralSDK(auth, pathToSwaggerJsonFile).getSDK();
+  // Initiate the SDK (this will inflate the SDK from the
+  // open api json from development.sentral.com.au)
+  let pathToOpenAPIJsonFileFromSentral = "./";
+  let assetsFolder = "./";
+  let sentralSDK = SentralSDK(
+    auth,
+    pathToOpenAPIJsonFileFromSentral,
+    assetsFolder,
+    true
+  ).getSDK();
+
+  /**
+   * Functions will be automatically created from the endpoints
+   * An endpoint that has inserts will create a function with two arguments
+   * queryParameters object and inserts object. The object keys correspond with
+   * the queryParameter key or insert placeholder name.
+   */
+
+  // Extra Parameters are the url query parameters
+  // let currentExtraParameters = { limit: 100, include: "person" };
+  // sentralSDK
+  //   .getEnrolmentsStudent(currentExtraParameters)
+  //   .then((response) => console.log(response));
+
+  // Inserts are the placeholders found in the url such as id in "/v1/endpoint/{id}/endpoint"
+  let anotherExtraParameters = { include: "person" };
+  let inserts = { id: 1 };
+  // sentralSDK
+  //   .getEnrolmentsStudentForId(anotherExtraParameters, inserts)
+  //   .then((response) => console.log(response));
+
+  // When using meta, the included items get merged and the urls are calculated rather than using the links for pagination
+  let useMeta = false;
+  // Inserts are the placeholders found in the url such as id in "/v1/endpoint/{id}/endpoint"
   sentralSDK
-    .getEnrolmentsFlag()
-    .then((response) => console.log(response.length));
+    .getEnrolmentsStudentForId(anotherExtraParameters, inserts, useMeta)
+    .then((response) => console.log(JSON.stringify(response, null, 2)));
 }
 
 /**

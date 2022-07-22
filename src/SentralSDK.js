@@ -18,6 +18,7 @@
  */
 
 import SentralFetchRateLimited from "./SentralFetch.js";
+import fetchAllWithMeta from "./SentralFetchUseMeta.js";
 import Cacher from "simple-object-to-json-cacher";
 import SwaggerFileImporter from "./SwaggerFileImporter.js";
 import fs from "fs";
@@ -99,17 +100,19 @@ export default function SentralSDK(
             if (methodKey.toLowerCase() === "get") {
               SDK[candidateNameForFunction] =
                 helperFunctions.doesEndpointStringIncludeInserts(endpoint)
-                  ? function (inserts, extraParameters) {
+                  ? function (extraParameters, inserts, useMeta = false) {
                       return helperFunctions.runGetEndpointWithInsertsAndParams(
                         endpoint,
+                        extraParameters,
                         inserts,
-                        extraParameters
+                        useMeta
                       );
                     }
-                  : function (extraParameters) {
+                  : function (extraParameters, useMeta) {
                       return helperFunctions.runGetEndpointWithParams(
                         endpoint,
-                        extraParameters
+                        extraParameters,
+                        useMeta
                       );
                     };
             }
@@ -152,7 +155,9 @@ export default function SentralSDK(
         console.log("Query Parameter String:", urlQueryParameters);
       }
       //Make it Safe
-      let encURI = encodeURI(url + urlQueryParameters);
+      let encURI = encodeURI(
+        url + (urlQueryParameters === "?" ? "" : urlQueryParameters)
+      );
       return encURI;
     },
     doesEndpointStringIncludeInserts: function (endpoint) {
@@ -196,27 +201,54 @@ export default function SentralSDK(
      * @param extraParameters
      * @returns {Promise<unknown>}
      */
-    runGetEndpointWithParams: function (endpoint, extraParameters) {
+    runGetEndpointWithParams: function (endpoint, extraParameters, useMeta) {
       if (!extraParameters) {
         extraParameters = {};
       }
       // extraParameters.limit = 200;
       let url = domain + "/restapi" + endpoint;
       let uri = this.processQueryParamaters(url, extraParameters);
-      //Execute call and return
-      return SentralFetchRateLimited(uri, apiKey, tenantCode, isVERBOSE);
+
+      let extraParamKeys = Object.keys(extraParameters);
+
+      let limit = null;
+      if (extraParamKeys.includes("limit")) {
+        limit = parseInt(extraParameters.limit);
+      }
+      let include = null;
+      if (extraParamKeys.includes("include")) {
+        include = extraParameters.include;
+      }
+
+      if (useMeta) {
+        //Execute calls async with chunks
+        let chunkSize = 5;
+        return fetchAllWithMeta(
+          uri,
+          apiKey,
+          tenantCode,
+          isVERBOSE,
+          limit,
+          include,
+          chunkSize
+        );
+      } else {
+        //Execute call and return
+        return SentralFetchRateLimited(uri, apiKey, tenantCode, isVERBOSE);
+      }
     },
     /**
      *
      * @param endpoint string "/v1/endpoint/{id}/endpoint"
-     * @param inserts object
      * @param extraParameters object
+     * @param inserts object
      * @returns {Promise<unknown>}
      */
     runGetEndpointWithInsertsAndParams: function (
       endpoint,
+      extraParameters,
       inserts,
-      extraParameters
+      useMeta
     ) {
       if (!extraParameters) {
         extraParameters = {};
@@ -224,13 +256,42 @@ export default function SentralSDK(
       if (inserts) {
         for (const insertsKey in inserts) {
           //replace key with insert
-          endpoint.replace("{" + insertsKey + "}", inserts[insertsKey]);
+          endpoint = endpoint.replace(
+            "{" + insertsKey + "}",
+            inserts[insertsKey]
+          );
         }
       }
       let url = domain + "/restapi" + endpoint;
       let uri = this.processQueryParamaters(url, extraParameters);
-      //Execute call and return
-      return SentralFetchRateLimited(uri, apiKey, tenantCode, isVERBOSE);
+
+      let extraParamKeys = Object.keys(extraParameters);
+
+      let limit = null;
+      if (extraParamKeys.includes("limit")) {
+        limit = parseInt(extraParameters.limit);
+      }
+      let include = null;
+      if (extraParamKeys.includes("include")) {
+        include = extraParameters.include;
+      }
+
+      if (useMeta) {
+        //Execute calls async with chunks
+        let chunkSize = 5;
+        return fetchAllWithMeta(
+          uri,
+          apiKey,
+          tenantCode,
+          isVERBOSE,
+          limit,
+          include,
+          chunkSize
+        );
+      } else {
+        //Execute call and return
+        return SentralFetchRateLimited(uri, apiKey, tenantCode, isVERBOSE);
+      }
     },
   };
 
@@ -262,6 +323,7 @@ export default function SentralSDK(
       console.log(e);
     }
   }
+
   function loadSDKMeta() {
     let sdkMetaCache = Cacher(ASSETSFOLDERPATH);
     return sdkMetaCache.load("META");

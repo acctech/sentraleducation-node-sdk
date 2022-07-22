@@ -21,11 +21,12 @@
     "sdk"
   ],
   "author": "Danny Falero (Software Engineer, CEM)",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "type": "module",
   "dependencies": {
     "bottleneck": "^2.19.5",
     "dotenv": "^10.0.0",
+    "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "simple-object-to-json-cacher": "^1.0.3"
   },
