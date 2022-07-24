@@ -59,6 +59,11 @@ function getStudents() {
   sentralSDK
     .getEnrolmentsStudentForId(anotherExtraParameters, inserts, useMeta)
     .then((response) => console.log(JSON.stringify(response, null, 2)));
+
+  // Including Student for person - expected behaviour that some person objects will not have students.
+  sentralSDK
+    .getEnrolmentsPerson({ limit: 100, include: "student" }, true)
+    .then((response) => console.log(JSON.stringify(response, null, 2)));
 }
 
 /**

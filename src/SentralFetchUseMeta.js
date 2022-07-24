@@ -45,6 +45,7 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
     let mainDataArrayClone = Array.isArray(mainDataArray)
       ? JSON.parse(JSON.stringify(mainDataArray))
       : JSON.parse(JSON.stringify([mainDataArray]));
+
     // For each of the individual included data objects
     includedDataArray.forEach((includedData) => {
       let includedDataType = includedData.type;
@@ -54,7 +55,8 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
       mainDataArrayClone.forEach((mainData, mainDataArrayCloneIndex) => {
         // Find the included data that matches the mainData
         if (
-          mainData.relationships[includedDataType].data.id === includedDataId
+          includedDataId !== undefined &&
+          mainData.relationships[includedDataType]?.data?.id === includedDataId
         ) {
           // Prepare an included object if it doesn't exist
           let included =
