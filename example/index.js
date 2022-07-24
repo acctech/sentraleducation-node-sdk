@@ -36,17 +36,22 @@ function getStudents() {
    */
 
   // Extra Parameters are the url query parameters
-  // let currentExtraParameters = { limit: 100, include: "person" };
-  // sentralSDK
-  //   .getEnrolmentsStudent(currentExtraParameters)
-  //   .then((response) => console.log(response));
+  let currentExtraParameters = { limit: 100, include: "person" };
+  sentralSDK
+    .getEnrolmentsStudent(currentExtraParameters)
+    .then((response) => console.log(JSON.stringify(response, null, 2)));
+
+  // Extra Parameters are the url query parameters
+  sentralSDK
+    .getEnrolmentsStudent(currentExtraParameters, true)
+    .then((response) => console.log(JSON.stringify(response, null, 2)));
 
   // Inserts are the placeholders found in the url such as id in "/v1/endpoint/{id}/endpoint"
   let anotherExtraParameters = { include: "person" };
   let inserts = { id: 1 };
-  // sentralSDK
-  //   .getEnrolmentsStudentForId(anotherExtraParameters, inserts)
-  //   .then((response) => console.log(response));
+  sentralSDK
+    .getEnrolmentsStudentForId(anotherExtraParameters, inserts, false)
+    .then((response) => console.log(JSON.stringify(response, null, 2)));
 
   // When using meta, the included items get merged and the urls are calculated rather than using the links for pagination
   let useMeta = false;
