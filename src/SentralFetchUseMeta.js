@@ -20,7 +20,7 @@
 import request from "request-promise";
 import q from "q";
 
-const CHUNK_DELAY_MS = 100;
+const CHUNK_DELAY_MS = 30;
 
 const requestObj = (url, apiToken, tenantCode, ca) => ({
   method: "GET",
@@ -54,10 +54,19 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
       // Go through the main data
       mainDataArrayClone.forEach((mainData, mainDataArrayCloneIndex) => {
         // Find the included data that matches the mainData
-        if (
-          includedDataId !== undefined &&
-          mainData.relationships[includedDataType]?.data?.id === includedDataId
-        ) {
+        // Go through the relationships keys
+        let relationshipNames = Object.keys(mainData.relationships);
+        // Find the relationship that has matching type & id
+        let matchingRelationshipName = relationshipNames.find(
+          (relationshipName) => {
+            mainData.relationships[relationshipName]?.data?.type ===
+              includedDataType &&
+              mainData.relationships[relationshipName]?.data?.id ===
+                includedDataId;
+          }
+        );
+
+        if (includedDataId !== undefined && matchingRelationshipName) {
           // Prepare an included object if it doesn't exist
           let included =
             mainDataArrayClone[mainDataArrayCloneIndex]["included"];
@@ -66,7 +75,7 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
           }
           // Add the data to the included object using the type as the attribute name.
           mainDataArrayClone[mainDataArrayCloneIndex]["included"][
-            includedDataType
+            matchingRelationshipName
           ] = includedData;
         }
       });
