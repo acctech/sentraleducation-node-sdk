@@ -28,42 +28,42 @@ function getStudents() {
     true
   ).getSDK();
 
-  // /**
-  //  * Functions will be automatically created from the endpoints
-  //  * An endpoint that has inserts will create a function with two arguments
-  //  * queryParameters object and inserts object. The object keys correspond with
-  //  * the queryParameter key or insert placeholder name.
-  //  */
+  /**
+   * Functions will be automatically created from the endpoints
+   * An endpoint that has inserts will create a function with two arguments
+   * queryParameters object and inserts object. The object keys correspond with
+   * the queryParameter key or insert placeholder name.
+   */
 
-  // // Extra Parameters are the url query parameters
-  let currentExtraParameters = { limit: 100, include: "person", tenant: "888" };
-  // sentralSDK
-  //   .getEnrolmentsStudent(currentExtraParameters)
-  //   .then((response) => console.log(JSON.stringify(response, null, 2)));
+  // Extra Parameters are the url query parameters
+  let currentExtraParameters = { limit: 100, include: "person" };
+  sentralSDK
+    .getEnrolmentsStudent(currentExtraParameters)
+    .then((response) => console.log(JSON.stringify(response, null, 2)));
 
-  // // Extra Parameters are the url query parameters
+  // Extra Parameters are the url query parameters
   sentralSDK
     .getEnrolmentsStudent(currentExtraParameters, true)
     .then((response) => console.log(JSON.stringify(response.length, null, 2)));
 
-  // // Inserts are the placeholders found in the url such as id in "/v1/endpoint/{id}/endpoint"
-  // let anotherExtraParameters = { include: "person" };
-  // let inserts = { id: 1 };
-  // sentralSDK
-  //   .getEnrolmentsStudentForId(anotherExtraParameters, inserts, false)
-  //   .then((response) => console.log(JSON.stringify(response, null, 2)));
+  // Inserts are the placeholders found in the url such as id in "/v1/endpoint/{id}/endpoint"
+  let anotherExtraParameters = { include: "person" };
+  let inserts = { id: 1 };
+  sentralSDK
+    .getEnrolmentsStudentForId(anotherExtraParameters, inserts, false)
+    .then((response) => console.log(JSON.stringify(response, null, 2)));
 
-  // // When using meta, the included items get merged and the urls are calculated rather than using the links for pagination
-  // let useMeta = false;
-  // // Inserts are the placeholders found in the url such as id in "/v1/endpoint/{id}/endpoint"
-  // sentralSDK
-  //   .getEnrolmentsStudentForId(anotherExtraParameters, inserts, useMeta)
-  //   .then((response) => console.log(JSON.stringify(response, null, 2)));
+  // When using meta, the included items get merged and the urls are calculated rather than using the links for pagination
+  let useMeta = false;
+  // Inserts are the placeholders found in the url such as id in "/v1/endpoint/{id}/endpoint"
+  sentralSDK
+    .getEnrolmentsStudentForId(anotherExtraParameters, inserts, useMeta)
+    .then((response) => console.log(JSON.stringify(response, null, 2)));
 
   // Including Student for person - expected behaviour that some person objects will not have students.
-  // sentralSDK
-  //   .getEnrolmentsPerson({ limit: 100, include: "student" }, true)
-  //   .then((response) => console.log(JSON.stringify(response, null, 2)));
+  sentralSDK
+    .getEnrolmentsPerson({ limit: 100, include: "student" }, true)
+    .then((response) => console.log(JSON.stringify(response, null, 2)));
 }
 
 /**
