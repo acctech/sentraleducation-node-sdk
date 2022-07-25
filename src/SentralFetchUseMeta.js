@@ -59,10 +59,12 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
         // Find the relationship that has matching type & id
         let matchingRelationshipName = relationshipNames.find(
           (relationshipName) => {
-            mainData.relationships[relationshipName]?.data?.type ===
-              includedDataType &&
+            return (
+              mainData.relationships[relationshipName]?.data?.type ===
+                includedDataType &&
               mainData.relationships[relationshipName]?.data?.id ===
-                includedDataId;
+                includedDataId
+            );
           }
         );
 
