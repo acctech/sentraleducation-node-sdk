@@ -112,10 +112,12 @@ const fetchAllWithMeta = async (
     // Prepare urls
     for (let i = 0; i < totalItemCount; ) {
       let offset = (i += limit);
-      let currentURL = url;
-      currentURL = currentURL.replace(/(&*)offset=\d+|offset=/g, "");
-      currentURL += "&offset=" + offset;
-      nextUrlArray.push(currentURL);
+      if (totalItemCount - offset >= 0) {
+        let currentURL = url;
+        currentURL = currentURL.replace(/(&*)offset=\d+|offset=/g, "");
+        currentURL += "&offset=" + offset;
+        nextUrlArray.push(currentURL);
+      }
     }
 
     if (verbose) {
@@ -154,9 +156,18 @@ const fetchAllWithMeta = async (
       );
       await q.delay(CHUNK_DELAY_MS);
     }
-
-    return data.concat(responseArray);
+    data = data.concat(...responseArray);
   }
+
+  if (verbose) {
+    console.log(
+      "Meta count match:",
+      data.length,
+      totalItemCount,
+      data.length === totalItemCount
+    );
+  }
+
   return data;
 };
 
