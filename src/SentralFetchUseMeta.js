@@ -83,10 +83,11 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
         }
       });
     });
-
     return mainDataArrayClone;
   }
-  return null;
+
+  // If no mainDataArray or includedDataArray, return a clone of mainDataArray
+  return JSON.parse(JSON.stringify(mainDataArray));
 }
 
 /**
