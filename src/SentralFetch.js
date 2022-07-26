@@ -35,6 +35,7 @@ const requestObj = (url, apiToken, tenantCode, ca) => ({
     "x-api-key": apiToken,
     "x-api-tenant": tenantCode,
   },
+  timeout: 360000,
 });
 
 /**

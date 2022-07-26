@@ -66,6 +66,11 @@ function getStudents() {
   sentralSDK
     .getEnrolmentsPerson({ limit: 100, include: "student" }, true)
     .then((response) => console.log(JSON.stringify(response, null, 2)));
+
+  // Try with different ChunkSizes
+  sentralSDK
+    .getEnrolmentsPerson({ limit: 100, include: "student" }, true, 10)
+    .then((response) => console.log(JSON.stringify(response, null, 2)));
 }
 
 /**

@@ -32,6 +32,7 @@ const requestObj = (url, apiToken, tenantCode, ca) => ({
     "x-api-key": apiToken,
     "x-api-tenant": tenantCode,
   },
+  timeout: 360000,
 });
 
 /**
@@ -117,7 +118,7 @@ const fetchAllWithMeta = async (
   }
 
   // console.log(JSON.stringify(data, null, 2));
-  let nextUrlArray = [];
+  let nextUrlsArray = [];
   // Prepare the future links skipping the first one if theres more than 1 result
   if (totalItemCount && totalItemCount > 1) {
     // Prepare urls
@@ -127,33 +128,33 @@ const fetchAllWithMeta = async (
         let currentURL = url;
         currentURL = currentURL.replace(/(&*)offset=\d+|offset=/g, "");
         currentURL += "&offset=" + offset;
-        nextUrlArray.push(currentURL);
+        nextUrlsArray.push(currentURL);
       }
     }
 
     if (verbose) {
-      console.log(nextUrlArray);
+      console.log(nextUrlsArray);
     }
 
     // Split into chunks and make requests with q
     let responseArray = [];
     let lastProgress = 0;
-    for (let i = 0; i < nextUrlArray.length; i += chunkSize) {
-      let progressPercentage = parseInt(i / nextUrlArray.length);
+    for (let i = 0; i < nextUrlsArray.length; i += chunkSize) {
+      let progressPercentage = parseInt(i / nextUrlsArray.length);
       if (
         verbose &&
-        progressPercentage % 10 === 0 &&
+        // progressPercentage % 10 === 0 &&
         lastProgress !== progressPercentage
       ) {
-        console.log("Progress", parseInt(i / nextUrlArray.length) + "%");
+        console.log("Progress", parseInt(i / nextUrlsArray.length) + "%");
         lastProgress = progressPercentage;
       }
       let requestArrayChunk = [];
       let endSlice =
-        nextUrlArray.length < i + chunkSize
-          ? nextUrlArray.length
+        nextUrlsArray.length < i + chunkSize
+          ? nextUrlsArray.length
           : i + chunkSize;
-      requestArrayChunk = nextUrlArray.slice(i, endSlice);
+      requestArrayChunk = nextUrlsArray.slice(i, endSlice);
       let sliceReturnResponseArray = requestArrayChunk.map((requestUrl) => {
         return request(requestObj(requestUrl, apiToken, tenantCode));
       });

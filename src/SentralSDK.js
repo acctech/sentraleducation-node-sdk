@@ -100,19 +100,26 @@ export default function SentralSDK(
             if (methodKey.toLowerCase() === "get") {
               SDK[candidateNameForFunction] =
                 helperFunctions.doesEndpointStringIncludeInserts(endpoint)
-                  ? function (extraParameters, inserts, useMeta = false) {
+                  ? function (
+                      extraParameters,
+                      inserts,
+                      useMeta = false,
+                      chunkSize
+                    ) {
                       return helperFunctions.runGetEndpointWithInsertsAndParams(
                         endpoint,
                         extraParameters,
                         inserts,
-                        useMeta
+                        useMeta,
+                        chunkSize
                       );
                     }
-                  : function (extraParameters, useMeta) {
+                  : function (extraParameters, useMeta, chunkSize) {
                       return helperFunctions.runGetEndpointWithParams(
                         endpoint,
                         extraParameters,
-                        useMeta
+                        useMeta,
+                        chunkSize
                       );
                     };
             }
@@ -201,7 +208,12 @@ export default function SentralSDK(
      * @param extraParameters
      * @returns {Promise<unknown>}
      */
-    runGetEndpointWithParams: function (endpoint, extraParameters, useMeta) {
+    runGetEndpointWithParams: function (
+      endpoint,
+      extraParameters,
+      useMeta,
+      chunkSize = 5
+    ) {
       if (!extraParameters) {
         extraParameters = {};
       }
@@ -221,8 +233,6 @@ export default function SentralSDK(
       }
 
       if (useMeta) {
-        //Execute calls async with chunks
-        let chunkSize = 5;
         return fetchAllWithMeta(
           uri,
           apiKey,
@@ -248,7 +258,8 @@ export default function SentralSDK(
       endpoint,
       extraParameters,
       inserts,
-      useMeta
+      useMeta,
+      chunkSize = 5
     ) {
       if (!extraParameters) {
         extraParameters = {};
@@ -277,8 +288,6 @@ export default function SentralSDK(
       }
 
       if (useMeta) {
-        //Execute calls async with chunks
-        let chunkSize = 5;
         return fetchAllWithMeta(
           uri,
           apiKey,
