@@ -110,7 +110,7 @@ const fetchAllWithMeta = async (
   data = data.concat(response.body.data);
 
   // If there are keywords in the include string then merge the related objects into one
-  if (includeString) {
+  if (includeString && includeString.length > 0) {
     data = mergeIncludedDataWithMainData(
       response.body.data,
       response.body.included
@@ -160,10 +160,14 @@ const fetchAllWithMeta = async (
       });
       responseArray = responseArray.concat(
         (await q.all(sliceReturnResponseArray)).map((response) => {
-          return mergeIncludedDataWithMainData(
-            response?.body?.data,
-            response?.body?.included
-          );
+          if (includeString && includeString.length > 0) {
+            return mergeIncludedDataWithMainData(
+              response?.body?.data,
+              response?.body?.included
+            );
+          } else {
+            return response?.body?.data;
+          }
         })
       );
       await q.delay(CHUNK_DELAY_MS);
