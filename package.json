@@ -1,6 +1,6 @@
 {
   "name": "sentraleducation-node-sdk",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "description": "Sentral Node SDK Implementation of documentation http://development.sentral.com.au/",
   "main": "./dist/SentralSDK.js",
   "homepage": "https://github.com/acctech/sentraleducation-node-sdk",
@@ -26,10 +26,10 @@
   "dependencies": {
     "bottleneck": "^2.19.5",
     "dotenv": "^10.0.0",
+    "q": "^1.5.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
-    "simple-object-to-json-cacher": "^1.0.9",
-    "q": "^1.5.1"
+    "simple-object-to-json-cacher": "^1.0.9"
   },
   "devDependencies": {
     "@types/q": "^1.5.5",
