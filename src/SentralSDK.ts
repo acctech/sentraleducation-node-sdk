@@ -25,9 +25,14 @@ import fs from "fs";
 import path from "path";
 
 export default function SentralSDK(
-  auth,
-  swaggerFolder,
-  assetsFolderPath,
+  this: any,
+  auth: {
+    sentralAPIKey: string;
+    sentralTenantSchoolCode: string;
+    domain: string;
+  },
+  swaggerFolder: string,
+  assetsFolderPath: string,
   verbose = false
 ) {
   /**
@@ -36,9 +41,10 @@ export default function SentralSDK(
   const apiKey = auth.sentralAPIKey;
   const tenantCode = auth.sentralTenantSchoolCode;
   const domain = auth.domain;
-  let SDK = {};
-  let ASSETSFOLDERPATH = null;
-  let isVERBOSE = false;
+  let SDK: any = {};
+  let ASSETSFOLDERPATH: string = "";
+  let isVERBOSE: boolean = false;
+  const sentralSDKInstance = this;
 
   /**
    * Initiate SDK from Swagger.json documentation.
@@ -47,8 +53,8 @@ export default function SentralSDK(
    * @returns
    */
   function initiateSDKFromSwaggerFile(
-    swaggerFolder,
-    assetsFolderPath,
+    swaggerFolder: string,
+    assetsFolderPath: string,
     verbose = false
   ) {
     console.log("Initiating SDK");
@@ -77,7 +83,7 @@ export default function SentralSDK(
             let availableParams = null;
             if (endpointMetaData[methodKey].parameters) {
               availableParams = endpointMetaData[methodKey].parameters.map(
-                function (queryParam) {
+                function (queryParam: { name: string }) {
                   return queryParam.name;
                 }
               );
@@ -101,10 +107,10 @@ export default function SentralSDK(
               SDK[candidateNameForFunction] =
                 helperFunctions.doesEndpointStringIncludeInserts(endpoint)
                   ? function (
-                      extraParameters,
-                      inserts,
+                      extraParameters: any,
+                      inserts: any,
                       useMeta = false,
-                      chunkSize
+                      chunkSize: number
                     ) {
                       return helperFunctions.runGetEndpointWithInsertsAndParams(
                         endpoint,
@@ -114,7 +120,11 @@ export default function SentralSDK(
                         chunkSize
                       );
                     }
-                  : function (extraParameters, useMeta, chunkSize) {
+                  : function (
+                      extraParameters: any,
+                      useMeta: boolean,
+                      chunkSize: number
+                    ) {
                       return helperFunctions.runGetEndpointWithParams(
                         endpoint,
                         extraParameters,
@@ -132,21 +142,21 @@ export default function SentralSDK(
       saveSDKMeta(endpoints, SDK);
       console.log("SDK Loaded");
       //Return this for chaining.
-      return this;
+      return sentralSDKInstance;
     } catch (err) {
       throw "Couldn't load endpoints to create SDK Meta";
     }
   }
 
   const helperFunctions = {
-    retrieveInsertsNames: function (endpointString) {
+    retrieveInsertsNames: function (endpointString: string) {
       let inserts = endpointString.match(/{([^}]*)}/g);
       if (inserts) {
         inserts = inserts.map((insert) => insert.replace(/[{}]/g, ""));
       }
       return inserts;
     },
-    processQueryParamaters: function (url, queryParametersObj) {
+    processQueryParamaters: function (url: string, queryParametersObj: any) {
       let urlQueryParameters = "";
       if (queryParametersObj) {
         urlQueryParameters = "?";
@@ -167,7 +177,7 @@ export default function SentralSDK(
       );
       return encURI;
     },
-    doesEndpointStringIncludeInserts: function (endpoint) {
+    doesEndpointStringIncludeInserts: function (endpoint: string) {
       return endpoint.includes("/{") && endpoint.includes("}");
     },
     /**
@@ -177,7 +187,10 @@ export default function SentralSDK(
      * @param endpointString "/v1/api/endpoing/myendpoint{1}"
      * @returns {string}
      */
-    prepareCandidateFunctionNameForEndpoint: function (method, endpointString) {
+    prepareCandidateFunctionNameForEndpoint: function (
+      method: string,
+      endpointString: string
+    ) {
       //Remove the API related part of the endpoint.
       let candidateStringWithoutApiDefinition = endpointString.replace(
         /\/v1/g,
@@ -209,9 +222,9 @@ export default function SentralSDK(
      * @returns {Promise<unknown>}
      */
     runGetEndpointWithParams: function (
-      endpoint,
-      extraParameters,
-      useMeta,
+      endpoint: string,
+      extraParameters: any,
+      useMeta: boolean,
       chunkSize = 5
     ) {
       if (!extraParameters) {
@@ -255,10 +268,10 @@ export default function SentralSDK(
      * @returns {Promise<unknown>}
      */
     runGetEndpointWithInsertsAndParams: function (
-      endpoint,
-      extraParameters,
-      inserts,
-      useMeta,
+      endpoint: string,
+      extraParameters: any,
+      inserts: any,
+      useMeta: boolean,
       chunkSize = 5
     ) {
       if (!extraParameters) {
@@ -312,13 +325,16 @@ export default function SentralSDK(
   }
 
   // Convert Swagger to Endpoints File
-  function generateEndpointsFile(assetsCacher, folderPathOfSwaggerJSON) {
+  function generateEndpointsFile(
+    assetsCacher: any,
+    folderPathOfSwaggerJSON: string
+  ) {
     let sentralSwagger = SwaggerFileImporter(folderPathOfSwaggerJSON);
     let sentralEndpoints = sentralSwagger.getEndpointFullDetails();
     assetsCacher.save("endpoints", sentralEndpoints);
   }
 
-  function saveSDKMeta(endpoints, SDK) {
+  function saveSDKMeta(endpoints: string[], SDK: any) {
     let sdkMetaCache = Cacher(ASSETSFOLDERPATH);
     sdkMetaCache.save("META", { endpoints, SDK });
     // Write a common JS file that can be imported for reference.
@@ -337,7 +353,7 @@ export default function SentralSDK(
     let sdkMetaCache = Cacher(ASSETSFOLDERPATH);
     return sdkMetaCache.load("META");
   }
-  function querySDKMeta(callback) {
+  function querySDKMeta(callback: Function) {
     callback(loadSDKMeta());
   }
 

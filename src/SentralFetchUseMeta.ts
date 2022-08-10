@@ -22,7 +22,12 @@ import q from "q";
 
 const CHUNK_DELAY_MS = 30;
 
-const requestObj = (url, apiToken, tenantCode, ca) => ({
+const requestObj = (
+  url: string,
+  apiToken: string,
+  tenantCode: string,
+  ca: string | undefined
+) => ({
   method: "GET",
   uri: url,
   json: true,
@@ -41,7 +46,10 @@ const requestObj = (url, apiToken, tenantCode, ca) => ({
  * @param {[]} includedDataArray
  * @returns
  */
-function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
+function mergeIncludedDataWithMainData(
+  mainDataArray: any[],
+  includedDataArray: any[]
+) {
   if (mainDataArray && includedDataArray) {
     let mainDataArrayClone = Array.isArray(mainDataArray)
       ? JSON.parse(JSON.stringify(mainDataArray))
@@ -53,35 +61,37 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
       let includedDataId = includedData.id;
 
       // Go through the main data
-      mainDataArrayClone.forEach((mainData, mainDataArrayCloneIndex) => {
-        // Find the included data that matches the mainData
-        // Go through the relationships keys
-        let relationshipNames = Object.keys(mainData.relationships);
-        // Find the relationship that has matching type & id
-        let matchingRelationshipName = relationshipNames.find(
-          (relationshipName) => {
-            return (
-              mainData.relationships[relationshipName]?.data?.type ===
-                includedDataType &&
-              mainData.relationships[relationshipName]?.data?.id ===
-                includedDataId
-            );
-          }
-        );
+      mainDataArrayClone.forEach(
+        (mainData: any, mainDataArrayCloneIndex: number) => {
+          // Find the included data that matches the mainData
+          // Go through the relationships keys
+          let relationshipNames = Object.keys(mainData.relationships);
+          // Find the relationship that has matching type & id
+          let matchingRelationshipName = relationshipNames.find(
+            (relationshipName) => {
+              return (
+                mainData.relationships[relationshipName]?.data?.type ===
+                  includedDataType &&
+                mainData.relationships[relationshipName]?.data?.id ===
+                  includedDataId
+              );
+            }
+          );
 
-        if (includedDataId !== undefined && matchingRelationshipName) {
-          // Prepare an included object if it doesn't exist
-          let included =
-            mainDataArrayClone[mainDataArrayCloneIndex]["included"];
-          if (included === undefined || included === null) {
-            mainDataArrayClone[mainDataArrayCloneIndex]["included"] = {};
+          if (includedDataId !== undefined && matchingRelationshipName) {
+            // Prepare an included object if it doesn't exist
+            let included =
+              mainDataArrayClone[mainDataArrayCloneIndex]["included"];
+            if (included === undefined || included === null) {
+              mainDataArrayClone[mainDataArrayCloneIndex]["included"] = {};
+            }
+            // Add the data to the included object using the type as the attribute name.
+            mainDataArrayClone[mainDataArrayCloneIndex]["included"][
+              matchingRelationshipName
+            ] = includedData;
           }
-          // Add the data to the included object using the type as the attribute name.
-          mainDataArrayClone[mainDataArrayCloneIndex]["included"][
-            matchingRelationshipName
-          ] = includedData;
         }
-      });
+      );
     });
     return mainDataArrayClone;
   }
@@ -94,18 +104,25 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
 const fetchAllWithMeta = async (
-  url,
-  apiToken,
-  tenantCode,
+  url: string,
+  apiToken: string,
+  tenantCode: string,
   verbose = false,
-  limit,
-  includeString,
+  limit: number | null,
+  includeString: string,
   chunkSize = 10
 ) => {
-  let data = [];
+  let data: any[] = [];
+
+  // Default limit if none given
+  if (limit === null) {
+    limit = 10;
+  }
 
   // Make first request.
-  let response = await request(requestObj(url, apiToken, tenantCode));
+  let response = await request(
+    requestObj(url, apiToken, tenantCode, undefined)
+  );
   // Use count to figure out max items
   let totalItemCount = response.body.meta.count;
   data = data.concat(response.body.data);
@@ -138,16 +155,16 @@ const fetchAllWithMeta = async (
     }
 
     // Split into chunks and make requests with q
-    let responseArray = [];
+    let responseArray: any[] = [];
     let lastProgress = 0;
     for (let i = 0; i < nextUrlsArray.length; i += chunkSize) {
-      let progressPercentage = parseInt(i / nextUrlsArray.length);
+      let progressPercentage = Math.floor(i / nextUrlsArray.length);
       if (
         verbose &&
         // progressPercentage % 10 === 0 &&
         lastProgress !== progressPercentage
       ) {
-        console.log("Progress", parseInt(i / nextUrlsArray.length) + "%");
+        console.log("Progress", Math.floor(i / nextUrlsArray.length) + "%");
         lastProgress = progressPercentage;
       }
       let requestArrayChunk = [];
@@ -157,7 +174,7 @@ const fetchAllWithMeta = async (
           : i + chunkSize;
       requestArrayChunk = nextUrlsArray.slice(i, endSlice);
       let sliceReturnResponseArray = requestArrayChunk.map((requestUrl) => {
-        return request(requestObj(requestUrl, apiToken, tenantCode));
+        return request(requestObj(requestUrl, apiToken, tenantCode, undefined));
       });
       responseArray = responseArray.concat(
         (await q.all(sliceReturnResponseArray)).map((response) => {
@@ -188,7 +205,7 @@ const fetchAllWithMeta = async (
   return data;
 };
 
-const isIterable = function (obj) {
+const isIterable = function (obj: any) {
   // checks for null and undefined
   if (obj == null) {
     return false;

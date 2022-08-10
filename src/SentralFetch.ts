@@ -25,7 +25,12 @@ const limiter = new Bottleneck({
   minTime: 1,
 });
 
-const requestObj = (url, apiToken, tenantCode, ca) => ({
+const requestObj = (
+  url: string,
+  apiToken: string,
+  tenantCode: string,
+  ca: string
+) => ({
   method: "GET",
   uri: url,
   json: true,
@@ -41,8 +46,14 @@ const requestObj = (url, apiToken, tenantCode, ca) => ({
 /**
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
-const fetchAll = (url, apiToken, tenantCode, verbose = false, result = []) =>
-  request(requestObj(url, apiToken, tenantCode)).then((response) => {
+const fetchAll = (
+  url: string,
+  apiToken: string,
+  tenantCode: string,
+  verbose: boolean,
+  result: any = []
+): any =>
+  request(requestObj(url, apiToken, tenantCode, "")).then((response: any) => {
     if (response.body) {
       if (isIterable(response.body.data)) {
         result = [...result, ...response.body.data];
@@ -71,7 +82,7 @@ const fetchAll = (url, apiToken, tenantCode, verbose = false, result = []) =>
     }
   });
 
-const isIterable = function (obj) {
+const isIterable = function (obj: any) {
   // checks for null and undefined
   if (obj == null) {
     return false;
