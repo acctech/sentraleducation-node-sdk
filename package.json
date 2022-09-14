@@ -11,8 +11,8 @@
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/.bin/jest --detectOpenHandles",
     "example": "node ./example/index.js",
-    "deploylib": "npm version patch && npm publish",
-    "build": "tsc"
+    "build": "tsc",
+    "deploy": "npm version patch --force && npm publish"
   },
   "keywords": [
     "node",
