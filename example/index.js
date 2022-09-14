@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-import SentralSDK from "../src/SentralSDK.js";
+import SentralSDK from "../dist/SentralSDK.js";
 
 (function Program() {
   getStudents();
