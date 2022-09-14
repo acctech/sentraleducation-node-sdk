@@ -24,7 +24,7 @@ import SwaggerFileImporter from "./SwaggerFileImporter.js";
 import fs from "fs";
 import path from "path";
 
-export default function SentralSDK(
+export = function SentralSDK(
   this: any,
   auth: {
     sentralAPIKey: string;
@@ -364,4 +364,4 @@ export default function SentralSDK(
     getSDK,
     querySDKMeta,
   };
-}
+};
