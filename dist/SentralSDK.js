@@ -20,14 +20,13 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 const SentralFetch_js_1 = __importDefault(require("./SentralFetch.js"));
 const SentralFetchUseMeta_js_1 = __importDefault(require("./SentralFetchUseMeta.js"));
 const simple_object_to_json_cacher_1 = __importDefault(require("simple-object-to-json-cacher"));
 const SwaggerFileImporter_js_1 = __importDefault(require("./SwaggerFileImporter.js"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-function SentralSDK(auth, swaggerFolder, assetsFolderPath, verbose = false) {
+module.exports = function SentralSDK(auth, swaggerFolder, assetsFolderPath, verbose = false) {
     /**
      * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
      */
@@ -268,5 +267,4 @@ function SentralSDK(auth, swaggerFolder, assetsFolderPath, verbose = false) {
         getSDK,
         querySDKMeta,
     };
-}
-exports.default = SentralSDK;
+};

@@ -16,11 +16,12 @@
  *
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
-export default function SentralSDK(this: any, auth: {
+declare const _default: (this: any, auth: {
     sentralAPIKey: string;
     sentralTenantSchoolCode: string;
     domain: string;
-}, swaggerFolder: string, assetsFolderPath: string, verbose?: boolean): {
+}, swaggerFolder: string, assetsFolderPath: string, verbose?: boolean) => {
     getSDK: () => any;
     querySDKMeta: (callback: Function) => void;
 };
+export = _default;

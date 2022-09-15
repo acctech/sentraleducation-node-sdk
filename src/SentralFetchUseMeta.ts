@@ -63,36 +63,40 @@ function mergeIncludedDataWithMainData(
       // Go through the main data
       mainDataArrayClone.forEach(
         (mainData: any, mainDataArrayCloneIndex: number) => {
-          // Find the included data that matches the mainData
-          // Go through the relationships keys
-          let relationshipNames = Object.keys(mainData.relationships);
-          // Find the relationship that has matching type & id
-          let matchingRelationshipName = relationshipNames.find(
-            (relationshipName) => {
-              return (
-                mainData.relationships[relationshipName]?.data?.type ===
-                  includedDataType &&
-                mainData.relationships[relationshipName]?.data?.id ===
-                  includedDataId
-              );
-            }
-          );
+          if (typeof mainData.relationships === "object") {
+            // Find the included data that matches the mainData
+            // Go through the relationships keys
+            let relationshipNames = Object.keys(mainData.relationships);
+            // Find the relationship that has matching type & id
+            let matchingRelationshipName = relationshipNames.find(
+              (relationshipName) => {
+                return (
+                  mainData.relationships[relationshipName]?.data?.type ===
+                    includedDataType &&
+                  mainData.relationships[relationshipName]?.data?.id ===
+                    includedDataId
+                );
+              }
+            );
 
-          if (includedDataId !== undefined && matchingRelationshipName) {
-            // Prepare an included object if it doesn't exist
-            let included =
-              mainDataArrayClone[mainDataArrayCloneIndex]["included"];
-            if (included === undefined || included === null) {
-              mainDataArrayClone[mainDataArrayCloneIndex]["included"] = {};
+            if (includedDataId !== undefined && matchingRelationshipName) {
+              // Prepare an included object if it doesn't exist
+              let included =
+                mainDataArrayClone[mainDataArrayCloneIndex]["included"];
+              if (included === undefined || included === null) {
+                mainDataArrayClone[mainDataArrayCloneIndex]["included"] = {};
+              }
+
+              // Add the data to the included object using the type as the attribute name.
+              mainDataArrayClone[mainDataArrayCloneIndex]["included"][
+                matchingRelationshipName
+              ] = includedData;
             }
-            // Add the data to the included object using the type as the attribute name.
-            mainDataArrayClone[mainDataArrayCloneIndex]["included"][
-              matchingRelationshipName
-            ] = includedData;
           }
         }
       );
     });
+
     return mainDataArrayClone;
   }
 

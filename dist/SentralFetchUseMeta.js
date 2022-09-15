@@ -62,26 +62,30 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
             let includedDataId = includedData.id;
             // Go through the main data
             mainDataArrayClone.forEach((mainData, mainDataArrayCloneIndex) => {
-                // Find the included data that matches the mainData
-                // Go through the relationships keys
-                let relationshipNames = Object.keys(mainData.relationships);
-                // Find the relationship that has matching type & id
-                let matchingRelationshipName = relationshipNames.find((relationshipName) => {
-                    var _a, _b, _c, _d;
-                    return (((_b = (_a = mainData.relationships[relationshipName]) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.type) ===
-                        includedDataType &&
-                        ((_d = (_c = mainData.relationships[relationshipName]) === null || _c === void 0 ? void 0 : _c.data) === null || _d === void 0 ? void 0 : _d.id) ===
-                            includedDataId);
-                });
-                if (includedDataId !== undefined && matchingRelationshipName) {
-                    // Prepare an included object if it doesn't exist
-                    let included = mainDataArrayClone[mainDataArrayCloneIndex]["included"];
-                    if (included === undefined || included === null) {
-                        mainDataArrayClone[mainDataArrayCloneIndex]["included"] = {};
+                console.log("Got here", mainDataArrayCloneIndex, mainData.relationships);
+                if (typeof mainData.relationships === "object") {
+                    // Find the included data that matches the mainData
+                    // Go through the relationships keys
+                    let relationshipNames = Object.keys(mainData.relationships);
+                    // Find the relationship that has matching type & id
+                    let matchingRelationshipName = relationshipNames.find((relationshipName) => {
+                        var _a, _b, _c, _d;
+                        return (((_b = (_a = mainData.relationships[relationshipName]) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.type) ===
+                            includedDataType &&
+                            ((_d = (_c = mainData.relationships[relationshipName]) === null || _c === void 0 ? void 0 : _c.data) === null || _d === void 0 ? void 0 : _d.id) ===
+                                includedDataId);
+                    });
+                    if (includedDataId !== undefined && matchingRelationshipName) {
+                        // Prepare an included object if it doesn't exist
+                        let included = mainDataArrayClone[mainDataArrayCloneIndex]["included"];
+                        if (included === undefined || included === null) {
+                            mainDataArrayClone[mainDataArrayCloneIndex]["included"] = {};
+                        }
+                        // Add the data to the included object using the type as the attribute name.
+                        mainDataArrayClone[mainDataArrayCloneIndex]["included"][matchingRelationshipName] = includedData;
                     }
-                    // Add the data to the included object using the type as the attribute name.
-                    mainDataArrayClone[mainDataArrayCloneIndex]["included"][matchingRelationshipName] = includedData;
                 }
+                console.log("Got here");
             });
         });
         return mainDataArrayClone;
