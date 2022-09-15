@@ -12,7 +12,7 @@
     "test": "jest --coverage",
     "example": "node ./example/index.js",
     "build": "tsc",
-    "deploy": "npm version patch --force && npm publish"
+    "deploy": "npm run build && npm run test && npm version patch --force && npm publish"
   },
   "keywords": [
     "node",

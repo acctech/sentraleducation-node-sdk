@@ -62,7 +62,6 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
             let includedDataId = includedData.id;
             // Go through the main data
             mainDataArrayClone.forEach((mainData, mainDataArrayCloneIndex) => {
-                console.log("Got here", mainDataArrayCloneIndex, mainData.relationships);
                 if (typeof mainData.relationships === "object") {
                     // Find the included data that matches the mainData
                     // Go through the relationships keys
@@ -85,7 +84,6 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
                         mainDataArrayClone[mainDataArrayCloneIndex]["included"][matchingRelationshipName] = includedData;
                     }
                 }
-                console.log("Got here");
             });
         });
         return mainDataArrayClone;
