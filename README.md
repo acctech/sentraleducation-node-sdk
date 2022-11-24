@@ -68,6 +68,20 @@ The META.json files also stores a `<endpointfunction>-about` object for each end
 
 Any additional query parameters are passed as an object into the arguments of the function after the inserts. For example: `/v1/activities/activity-instance/{id}/responses` contains a template string 'insert' and the endpoint contains query parameters such as "limit", "include", "offset". These parameters can be passed as an object for example: `{ limit: 200 }` to the function: `getActivitiesActivityInstanceForIdResponses(id, {limit: 200});`
 
+#### META
+
+When using meta, the included items get merged and the urls are calculated rather than using the links for pagination.
+Set useMeta = true when reaching plural endpoints where the data returned requires pagination.
+
+````
+let useMeta = false;
+// Inserts are the placeholders found in the url such as id in "/v1/endpoint/{id}/endpoint"
+
+sentralSDK
+  .getEnrolmentsStudentForId(anotherExtraParameters, inserts, useMeta)
+  .then((response) => console.log(JSON.stringify(response, null, 2)));
+```
+
 ##### Promises
 
 Functions return promises which the body of the response is the text returned.
@@ -76,9 +90,9 @@ For example:
 
 ```javascript
 getActivitiesActivityInstanceForIdResponses(id, { limit: 200 })
-  .then((response) => console.log(response))
-  .catch(console.log);
-```
+.then((response) => console.log(response))
+.catch(console.log);
+````
 
 ```bash
 [{
