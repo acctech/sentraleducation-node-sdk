@@ -114,7 +114,8 @@ const fetchAllWithMeta = async (
   verbose = false,
   limit: number | null,
   includeString: string,
-  chunkSize = 10
+  chunkSize = 10,
+  rawResponse: boolean = false
 ) => {
   let data: any[] = [];
 
@@ -127,6 +128,11 @@ const fetchAllWithMeta = async (
   let response = await request(
     requestObj(url, apiToken, tenantCode, undefined)
   );
+
+  if (rawResponse) {
+    return response;
+  }
+
   // Use count to figure out max items
   let totalItemCount = response.body.meta.count;
   data = data.concat(response.body.data);

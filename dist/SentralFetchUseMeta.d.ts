@@ -19,5 +19,5 @@
 /**
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
-declare const fetchAllWithMeta: (url: string, apiToken: string, tenantCode: string, verbose: boolean | undefined, limit: number | null, includeString: string, chunkSize?: number) => Promise<any[]>;
+declare const fetchAllWithMeta: (url: string, apiToken: string, tenantCode: string, verbose: boolean | undefined, limit: number | null, includeString: string, chunkSize?: number, rawResponse?: boolean) => Promise<any>;
 export default fetchAllWithMeta;

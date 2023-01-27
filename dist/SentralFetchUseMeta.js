@@ -94,7 +94,7 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
 /**
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
-const fetchAllWithMeta = (url, apiToken, tenantCode, verbose = false, limit, includeString, chunkSize = 10) => __awaiter(void 0, void 0, void 0, function* () {
+const fetchAllWithMeta = (url, apiToken, tenantCode, verbose = false, limit, includeString, chunkSize = 10, rawResponse = false) => __awaiter(void 0, void 0, void 0, function* () {
     let data = [];
     // Default limit if none given
     if (limit === null) {
@@ -102,6 +102,9 @@ const fetchAllWithMeta = (url, apiToken, tenantCode, verbose = false, limit, inc
     }
     // Make first request.
     let response = yield (0, request_promise_1.default)(requestObj(url, apiToken, tenantCode, undefined));
+    if (rawResponse) {
+        return response;
+    }
     // Use count to figure out max items
     let totalItemCount = response.body.meta.count;
     data = data.concat(response.body.data);

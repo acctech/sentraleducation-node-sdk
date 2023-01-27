@@ -42,7 +42,38 @@ const requestObj = (url, apiToken, tenantCode, ca) => ({
 /**
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
-const fetchAll = (url, apiToken, tenantCode, verbose, result = []) => (0, request_promise_1.default)(requestObj(url, apiToken, tenantCode, "")).then((response) => {
+const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, result = []) => (0, request_promise_1.default)(requestObj(url, apiToken, tenantCode, "")).then((response) => {
+    if (rawResponse) {
+        if (response) {
+            if (isIterable(response)) {
+                result = [...result, ...response];
+            }
+            else {
+                result = [...result, response];
+            }
+            const links = response.body.links;
+            if (links) {
+                if (links.next) {
+                    if (verbose) {
+                        console.log(`Fetching ${links.next}`);
+                    }
+                    return fetchAll(links.next, apiToken, tenantCode, verbose, result);
+                }
+                else {
+                    if (verbose) {
+                        console.log(`Reached end of pagination.`);
+                    }
+                    return result;
+                }
+            }
+            else {
+                return result;
+            }
+        }
+        else {
+            result = [...result, response];
+        }
+    }
     if (response.body) {
         if (isIterable(response.body.data)) {
             result = [...result, ...response.body.data];

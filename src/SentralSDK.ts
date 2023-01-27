@@ -110,26 +110,30 @@ export = function SentralSDK(
                       extraParameters: any,
                       inserts: any,
                       useMeta = false,
-                      chunkSize: number
+                      chunkSize?: number,
+                      rawResponse?: boolean
                     ) {
                       return helperFunctions.runGetEndpointWithInsertsAndParams(
                         endpoint,
                         extraParameters,
                         inserts,
                         useMeta,
-                        chunkSize
+                        chunkSize,
+                        rawResponse
                       );
                     }
                   : function (
                       extraParameters: any,
                       useMeta: boolean,
-                      chunkSize: number
+                      chunkSize: number,
+                      rawResponse?: boolean
                     ) {
                       return helperFunctions.runGetEndpointWithParams(
                         endpoint,
                         extraParameters,
                         useMeta,
-                        chunkSize
+                        chunkSize,
+                        rawResponse
                       );
                     };
             }
@@ -225,7 +229,8 @@ export = function SentralSDK(
       endpoint: string,
       extraParameters: any,
       useMeta: boolean,
-      chunkSize = 5
+      chunkSize = 5,
+      rawResponse = false
     ) {
       if (!extraParameters) {
         extraParameters = {};
@@ -253,11 +258,21 @@ export = function SentralSDK(
           isVERBOSE,
           limit,
           include,
-          chunkSize
+          chunkSize,
+          rawResponse
         );
       } else {
         //Execute call and return
-        return SentralFetchRateLimited(uri, apiKey, tenantCode, isVERBOSE);
+        // Ignore ts error for now.
+
+        return SentralFetchRateLimited(
+          uri,
+          apiKey,
+          tenantCode,
+          isVERBOSE,
+          // @ts-ignore
+          rawResponse
+        );
       }
     },
     /**
@@ -272,7 +287,8 @@ export = function SentralSDK(
       extraParameters: any,
       inserts: any,
       useMeta: boolean,
-      chunkSize = 5
+      chunkSize = 5,
+      rawResponse = false
     ) {
       if (!extraParameters) {
         extraParameters = {};
