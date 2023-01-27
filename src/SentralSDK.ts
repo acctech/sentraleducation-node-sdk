@@ -324,11 +324,19 @@ export = function SentralSDK(
           isVERBOSE,
           limit,
           include,
-          chunkSize
+          chunkSize,
+          rawResponse
         );
       } else {
         //Execute call and return
-        return SentralFetchRateLimited(uri, apiKey, tenantCode, isVERBOSE);
+        return SentralFetchRateLimited(
+          uri,
+          apiKey,
+          tenantCode,
+          isVERBOSE,
+          // @ts-ignore
+          rawResponse
+        );
       }
     },
   };

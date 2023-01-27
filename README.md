@@ -82,7 +82,30 @@ sentralSDK
   .then((response) => console.log(JSON.stringify(response, null, 2)));
 ```
 
-##### Promises
+#### Method Parameters
+##### doesEndpointStringIncludeInserts? Then:
+
+###### extraParameters: any,
+- Extra Parameters to include in the url query
+###### inserts: any,
+Inserts are the keywords to be replaced in the url for example api/v1/users/:id/ will be replaced with value of inserts object { id: "123" }
+###### useMeta: boolean, // default false
+- If useMeta is false, it uses the next url in the links property of the response (means it needs to wait for next page before it knows the next url), if useMeta is true calculate the next links by using the total count. useMeta won't work for you if there is no total count returns. This is best for Get Many/All type of requests.
+chunkSize?: number, // Only applies if Meta is true - it makes requests in chunks asynchronously default is 5
+rawResponse?: boolean
+
+##### Otherwise:
+
+###### extraParameters: any,
+- Extra Parameters to include in the url query
+###### useMeta: boolean,
+- If useMeta is false, it uses the next url in the links property of the response (means it needs to wait for next page before it knows the next url), if useMeta is true calculate the next links by using the total count. useMeta won't work for you if there is no total count returns. This is best for Get Many/All type of requests.
+###### chunkSize: number,
+- Only applies if Meta is true - it makes requests in chunks asynchronously default is 5
+###### rawResponse?: boolean
+- Returns a raw response
+
+###### Promises
 
 Functions return promises which the body of the response is the text returned.
 

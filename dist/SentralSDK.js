@@ -223,11 +223,13 @@ module.exports = function SentralSDK(auth, swaggerFolder, assetsFolderPath, verb
                 include = extraParameters.include;
             }
             if (useMeta) {
-                return (0, SentralFetchUseMeta_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, limit, include, chunkSize);
+                return (0, SentralFetchUseMeta_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, limit, include, chunkSize, rawResponse);
             }
             else {
                 //Execute call and return
-                return (0, SentralFetch_js_1.default)(uri, apiKey, tenantCode, isVERBOSE);
+                return (0, SentralFetch_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, 
+                // @ts-ignore
+                rawResponse);
             }
         },
     };

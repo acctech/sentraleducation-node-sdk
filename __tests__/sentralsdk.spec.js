@@ -107,4 +107,28 @@ describe("SentralSDK test Enrolments", () => {
     );
     return expect(request).resolves.toBeTruthy();
   });
+
+  test("Test getting a rawresponse from request", () => {
+    let request = sentralSDK.getEnrolmentsStudent(
+      { limit: 200 },
+      true,
+      null,
+      true
+    );
+
+    // Check the length
+    return expect(request).resolves.toHaveProperty("body");
+  });
+
+  test("Test getting a photo of student on Core Student Endpoint", () => {
+    let request = sentralSDK.getCoreCoreStudentForIdPhoto(
+      { width: 1024, height: 1024 },
+      { id: 4 },
+      true,
+      null,
+      true
+    );
+    // Expect the request to be an image
+    return expect(request).resolves.toHaveProperty("body");
+  });
 });
