@@ -26,11 +26,12 @@ const requestObj = (
   url: string,
   apiToken: string,
   tenantCode: string,
-  ca: string | undefined
+  ca: string | undefined,
+  json: boolean = true
 ) => ({
   method: "GET",
   uri: url,
-  json: true,
+  json: json,
   ca: ca === undefined ? "" : ca,
   resolveWithFullResponse: true,
   headers: {
@@ -126,7 +127,7 @@ const fetchAllWithMeta = async (
 
   // Make first request.
   let response = await request(
-    requestObj(url, apiToken, tenantCode, undefined)
+    requestObj(url, apiToken, tenantCode, undefined, false)
   );
 
   if (rawResponse) {

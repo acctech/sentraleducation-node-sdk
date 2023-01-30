@@ -29,11 +29,12 @@ const requestObj = (
   url: string,
   apiToken: string,
   tenantCode: string,
-  ca: string
+  ca: string,
+  json: boolean = true
 ) => ({
   method: "GET",
   uri: url,
-  json: true,
+  json: json,
   ca: ca === undefined ? "" : ca,
   resolveWithFullResponse: true,
   headers: {
@@ -54,16 +55,51 @@ const fetchAll = (
   rawResponse: boolean = false,
   result: any = []
 ): any =>
-  request(requestObj(url, apiToken, tenantCode, "")).then((response: any) => {
-    if (rawResponse) {
-      if (response) {
-        if (isIterable(response)) {
-          result = [...result, ...response];
+  request(requestObj(url, apiToken, tenantCode, "", !rawResponse)).then(
+    (response: any) => {
+      if (rawResponse) {
+        if (response) {
+          if (isIterable(response)) {
+            result = [...result, ...response];
+          } else {
+            result = [...result, response];
+          }
+
+          const links = response.body.links;
+          if (links) {
+            if (links.next) {
+              if (verbose) {
+                console.log(`Fetching ${links.next}`);
+              }
+              return fetchAll(
+                links.next,
+                apiToken,
+                tenantCode,
+                verbose,
+                result
+              );
+            } else {
+              if (verbose) {
+                console.log(`Reached end of pagination.`);
+              }
+              return result;
+            }
+          } else {
+            return result;
+          }
         } else {
           result = [...result, response];
         }
+      }
 
+      if (response.body) {
+        if (isIterable(response.body.data)) {
+          result = [...result, ...response.body.data];
+        } else {
+          result = [...result, response.body.data];
+        }
         const links = response.body.links;
+        // console.log(links);
         if (links) {
           if (links.next) {
             if (verbose) {
@@ -83,34 +119,7 @@ const fetchAll = (
         result = [...result, response];
       }
     }
-
-    if (response.body) {
-      if (isIterable(response.body.data)) {
-        result = [...result, ...response.body.data];
-      } else {
-        result = [...result, response.body.data];
-      }
-      const links = response.body.links;
-      // console.log(links);
-      if (links) {
-        if (links.next) {
-          if (verbose) {
-            console.log(`Fetching ${links.next}`);
-          }
-          return fetchAll(links.next, apiToken, tenantCode, verbose, result);
-        } else {
-          if (verbose) {
-            console.log(`Reached end of pagination.`);
-          }
-          return result;
-        }
-      } else {
-        return result;
-      }
-    } else {
-      result = [...result, response];
-    }
-  });
+  );
 
 const isIterable = function (obj: any) {
   // checks for null and undefined

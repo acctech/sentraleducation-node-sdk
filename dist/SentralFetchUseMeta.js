@@ -33,10 +33,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const request_promise_1 = __importDefault(require("request-promise"));
 const q_1 = __importDefault(require("q"));
 const CHUNK_DELAY_MS = 30;
-const requestObj = (url, apiToken, tenantCode, ca) => ({
+const requestObj = (url, apiToken, tenantCode, ca, json = true) => ({
     method: "GET",
     uri: url,
-    json: true,
+    json: json,
     ca: ca === undefined ? "" : ca,
     resolveWithFullResponse: true,
     headers: {
@@ -101,7 +101,7 @@ const fetchAllWithMeta = (url, apiToken, tenantCode, verbose = false, limit, inc
         limit = 10;
     }
     // Make first request.
-    let response = yield (0, request_promise_1.default)(requestObj(url, apiToken, tenantCode, undefined));
+    let response = yield (0, request_promise_1.default)(requestObj(url, apiToken, tenantCode, undefined, false));
     if (rawResponse) {
         return response;
     }

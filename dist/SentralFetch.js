@@ -27,10 +27,10 @@ const limiter = new bottleneck_1.default({
     maxConcurrent: 200,
     minTime: 1,
 });
-const requestObj = (url, apiToken, tenantCode, ca) => ({
+const requestObj = (url, apiToken, tenantCode, ca, json = true) => ({
     method: "GET",
     uri: url,
-    json: true,
+    json: json,
     ca: ca === undefined ? "" : ca,
     resolveWithFullResponse: true,
     headers: {
@@ -42,7 +42,7 @@ const requestObj = (url, apiToken, tenantCode, ca) => ({
 /**
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
-const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, result = []) => (0, request_promise_1.default)(requestObj(url, apiToken, tenantCode, "")).then((response) => {
+const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, result = []) => (0, request_promise_1.default)(requestObj(url, apiToken, tenantCode, "", !rawResponse)).then((response) => {
     if (rawResponse) {
         if (response) {
             if (isIterable(response)) {
