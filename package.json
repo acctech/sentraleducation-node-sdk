@@ -12,7 +12,8 @@
     "test": "jest --coverage",
     "example": "node ./example/index.js",
     "build": "tsc",
-    "deploy": "npm run build && npm run test && npm version patch --force && npm publish"
+    "deploy": "npm run build && npm run test && npm version patch --force && npm publish",
+    "yarndeploy": "yarn build && yarn test && yarn version patch --force && yarn publish"
   },
   "keywords": [
     "node",
