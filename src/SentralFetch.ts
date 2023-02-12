@@ -76,6 +76,7 @@ const fetchAll = (
                 apiToken,
                 tenantCode,
                 verbose,
+                rawResponse,
                 result
               );
             } else {
@@ -105,7 +106,14 @@ const fetchAll = (
             if (verbose) {
               console.log(`Fetching ${links.next}`);
             }
-            return fetchAll(links.next, apiToken, tenantCode, verbose, result);
+            return fetchAll(
+              links.next,
+              apiToken,
+              tenantCode,
+              verbose,
+              rawResponse,
+              result
+            );
           } else {
             if (verbose) {
               console.log(`Reached end of pagination.`);

@@ -101,7 +101,7 @@ const fetchAllWithMeta = (url, apiToken, tenantCode, verbose = false, limit, inc
         limit = 10;
     }
     // Make first request.
-    let response = yield (0, request_promise_1.default)(requestObj(url, apiToken, tenantCode, undefined, false));
+    let response = yield (0, request_promise_1.default)(requestObj(url, apiToken, tenantCode, undefined, !rawResponse));
     if (rawResponse) {
         return response;
     }

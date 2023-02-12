@@ -127,7 +127,7 @@ const fetchAllWithMeta = async (
 
   // Make first request.
   let response = await request(
-    requestObj(url, apiToken, tenantCode, undefined, false)
+    requestObj(url, apiToken, tenantCode, undefined, !rawResponse)
   );
 
   if (rawResponse) {

@@ -57,7 +57,7 @@ const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, resul
                     if (verbose) {
                         console.log(`Fetching ${links.next}`);
                     }
-                    return fetchAll(links.next, apiToken, tenantCode, verbose, result);
+                    return fetchAll(links.next, apiToken, tenantCode, verbose, rawResponse, result);
                 }
                 else {
                     if (verbose) {
@@ -88,7 +88,7 @@ const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, resul
                 if (verbose) {
                     console.log(`Fetching ${links.next}`);
                 }
-                return fetchAll(links.next, apiToken, tenantCode, verbose, result);
+                return fetchAll(links.next, apiToken, tenantCode, verbose, rawResponse, result);
             }
             else {
                 if (verbose) {
