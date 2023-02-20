@@ -111,7 +111,9 @@ export = function SentralSDK(
                       inserts: any,
                       useMeta = false,
                       chunkSize?: number,
-                      rawResponse?: boolean
+                      rawResponse?: boolean,
+                      extraHeaders?: any,
+                      extraAxiosSettings?: any
                     ) {
                       return helperFunctions.runGetEndpointWithInsertsAndParams(
                         endpoint,
@@ -119,21 +121,27 @@ export = function SentralSDK(
                         inserts,
                         useMeta,
                         chunkSize,
-                        rawResponse
+                        rawResponse,
+                        extraHeaders,
+                        extraAxiosSettings
                       );
                     }
                   : function (
                       extraParameters: any,
                       useMeta: boolean,
                       chunkSize: number,
-                      rawResponse?: boolean
+                      rawResponse?: boolean,
+                      extraHeaders?: any,
+                      extraAxiosSettings?: any
                     ) {
                       return helperFunctions.runGetEndpointWithParams(
                         endpoint,
                         extraParameters,
                         useMeta,
                         chunkSize,
-                        rawResponse
+                        rawResponse,
+                        extraHeaders,
+                        extraAxiosSettings
                       );
                     };
             }
@@ -230,7 +238,9 @@ export = function SentralSDK(
       extraParameters: any,
       useMeta: boolean,
       chunkSize = 5,
-      rawResponse = false
+      rawResponse = false,
+      extraHeaders = {},
+      extraAxiosSettings = {}
     ) {
       if (!extraParameters) {
         extraParameters = {};
@@ -259,7 +269,9 @@ export = function SentralSDK(
           limit,
           include,
           chunkSize,
-          rawResponse
+          rawResponse,
+          extraHeaders,
+          extraAxiosSettings
         );
       } else {
         //Execute call and return
@@ -271,7 +283,9 @@ export = function SentralSDK(
           tenantCode,
           isVERBOSE,
           // @ts-ignore
-          rawResponse
+          rawResponse,
+          extraHeaders,
+          extraAxiosSettings
         );
       }
     },
@@ -288,7 +302,9 @@ export = function SentralSDK(
       inserts: any,
       useMeta: boolean,
       chunkSize = 5,
-      rawResponse = false
+      rawResponse = false,
+      extraHeaders = {},
+      extraAxiosSettings = {}
     ) {
       if (!extraParameters) {
         extraParameters = {};
@@ -325,7 +341,9 @@ export = function SentralSDK(
           limit,
           include,
           chunkSize,
-          rawResponse
+          rawResponse,
+          extraHeaders,
+          extraAxiosSettings
         );
       } else {
         //Execute call and return
@@ -335,7 +353,9 @@ export = function SentralSDK(
           tenantCode,
           isVERBOSE,
           // @ts-ignore
-          rawResponse
+          rawResponse,
+          extraHeaders,
+          extraAxiosSettings
         );
       }
     },

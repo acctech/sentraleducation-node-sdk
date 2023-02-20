@@ -28,23 +28,15 @@ const limiter = new bottleneck_1.default({
     maxConcurrent: 200,
     minTime: 1,
 });
-const requestObj = (url, apiToken, tenantCode, ca, json = true) => ({
-    method: "GET",
-    url,
-    transformResponse: json ? (data) => JSON.parse(data) : (data) => data,
-    httpsAgent: new https_1.default.Agent({
-        ca: ca === undefined ? "" : ca,
-    }),
-    headers: {
-        "x-api-key": apiToken,
-        "x-api-tenant": tenantCode,
-    },
-    timeout: 360000,
-});
+const requestObj = (url, apiToken, tenantCode, ca, rawResponse = true, extraHeaders = {}, extraAxiosSettings = {}) => (Object.assign(Object.assign({ method: "GET", url, transformResponse: rawResponse ? (data) => data : undefined, httpsAgent: ca
+        ? new https_1.default.Agent({
+            ca: ca === undefined ? "" : ca,
+        })
+        : undefined, headers: Object.assign({ "x-api-key": apiToken, "x-api-tenant": tenantCode }, extraHeaders) }, extraAxiosSettings), { timeout: 360000 }));
 /**
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
-const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, result = []) => (0, axios_1.default)(requestObj(url, apiToken, tenantCode, "", !rawResponse)).then((response) => {
+const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, extraHeaders = {}, extraAxiosSettings = {}, result = []) => (0, axios_1.default)(requestObj(url, apiToken, tenantCode, undefined, rawResponse, extraHeaders, extraAxiosSettings)).then((response) => {
     if (rawResponse) {
         if (response) {
             if (isIterable(response)) {
@@ -59,7 +51,7 @@ const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, resul
                     if (verbose) {
                         console.log(`Fetching ${links.next}`);
                     }
-                    return fetchAll(links.next, apiToken, tenantCode, verbose, rawResponse, result);
+                    return fetchAll(links.next, apiToken, tenantCode, verbose, rawResponse, extraHeaders, extraAxiosSettings, result);
                 }
                 else {
                     if (verbose) {
@@ -90,7 +82,7 @@ const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, resul
                 if (verbose) {
                     console.log(`Fetching ${links.next}`);
                 }
-                return fetchAll(links.next, apiToken, tenantCode, verbose, rawResponse, result);
+                return fetchAll(links.next, apiToken, tenantCode, verbose, rawResponse, extraHeaders, extraAxiosSettings, result);
             }
             else {
                 if (verbose) {

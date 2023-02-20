@@ -28,21 +28,26 @@ const requestObj = (
   apiToken: string,
   tenantCode: string,
   ca: string | undefined,
-  json: boolean = true
+  rawResponse: boolean = true,
+  extraHeaders: any = {},
+  extraAxiosSettings: any = {}
 ): AxiosRequestConfig => ({
   method: "GET",
   url,
-  transformResponse: json ? (data) => JSON.parse(data) : (data) => data,
-  httpsAgent: new https.Agent({
-    ca: ca === undefined ? "" : ca,
-  }),
+  transformResponse: rawResponse ? (data) => data : undefined,
+  httpsAgent: ca
+    ? new https.Agent({
+        ca: ca === undefined ? "" : ca,
+      })
+    : undefined,
   headers: {
     "x-api-key": apiToken,
     "x-api-tenant": tenantCode,
+    ...extraHeaders,
   },
+  ...extraAxiosSettings,
   timeout: 360000,
 });
-
 /**
  * Merge the mainData array with the included data array to make one object.
  * @param {[]} mainDataArray
@@ -118,7 +123,9 @@ const fetchAllWithMeta = async (
   limit: number | null,
   includeString: string,
   chunkSize = 10,
-  rawResponse: boolean = false
+  rawResponse: boolean = false,
+  extraHeaders: any = {},
+  extraAxiosSettings: any = {}
 ) => {
   let data: any[] = [];
 
@@ -129,7 +136,15 @@ const fetchAllWithMeta = async (
 
   // Make first request.
   let response = await axios(
-    requestObj(url, apiToken, tenantCode, undefined, !rawResponse)
+    requestObj(
+      url,
+      apiToken,
+      tenantCode,
+      undefined,
+      rawResponse,
+      extraHeaders,
+      extraAxiosSettings
+    )
   );
 
   if (rawResponse) {
@@ -187,7 +202,17 @@ const fetchAllWithMeta = async (
           : i + chunkSize;
       requestArrayChunk = nextUrlsArray.slice(i, endSlice);
       let sliceReturnResponseArray = requestArrayChunk.map((requestUrl) => {
-        return axios(requestObj(requestUrl, apiToken, tenantCode, undefined));
+        return axios(
+          requestObj(
+            requestUrl,
+            apiToken,
+            tenantCode,
+            undefined,
+            rawResponse,
+            extraHeaders,
+            extraAxiosSettings
+          )
+        );
       });
       responseArray = responseArray.concat(
         (await q.all(sliceReturnResponseArray)).map((response) => {

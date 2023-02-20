@@ -85,30 +85,30 @@ describe("SentralSDK test Enrolments", () => {
     true
   ).getSDK();
 
-  test("Test getting enrolment flags", () => {
+  test("Test getting enrolment flags", async () => {
     let request = sentralSDK.getEnrolmentsFlag({ limit: 200 });
-    return expect(request).resolves.toBeTruthy();
+    return await expect(request).resolves.toBeTruthy();
   });
 
-  test("Test getting sentral status", () => {
+  test("Test getting sentral status", async () => {
     let request = sentralSDK.getSentralStatus();
-    return expect(request).resolves.toBeTruthy();
+    return await expect(request).resolves.toBeTruthy();
   });
 
-  test("Test getting enrolment flags using Meta", () => {
+  test("Test getting enrolment flags using Meta", async () => {
     let request = sentralSDK.getEnrolmentsFlag({ limit: 200 }, true);
-    return expect(request).resolves.toBeTruthy();
+    return await expect(request).resolves.toBeTruthy();
   });
 
-  test("Test getting enrolments enrolment using Meta", () => {
+  test("Test getting enrolments enrolment using Meta", async () => {
     let request = sentralSDK.getEnrolmentsFlag(
       { limit: 200, include: "school" },
       true
     );
-    return expect(request).resolves.toBeTruthy();
+    return await expect(request).resolves.toBeTruthy();
   });
 
-  test("Test getting a rawresponse from request", () => {
+  test("Test getting a rawresponse from request", async () => {
     let request = sentralSDK.getEnrolmentsStudent(
       { limit: 200 },
       true,
@@ -117,10 +117,28 @@ describe("SentralSDK test Enrolments", () => {
     );
 
     // Check the length
-    return expect(request).resolves.toHaveProperty("data");
+    return await expect(request).resolves.toHaveProperty("data");
   });
 
-  test("Test getting a photo of student on Core Student Endpoint", () => {
+  test("Test getting a photo of student on Core Student Endpoint", async () => {
+    let request = sentralSDK.getCoreCoreStudentForIdPhoto(
+      { width: 1024, height: 1024 },
+      { id: 4 },
+      true,
+      null,
+      true,
+      null,
+      {
+        responseType: "arraybuffer",
+      }
+    );
+
+    // Expect the request to be an image -- to be equal to typeof arraybuffer
+    // <Buffer ff d8 ff e0 00 10 4a 46 49 46 00 01 01 01 00 60 00 60 00 00 ff fe
+    return expect(Buffer.isBuffer((await request).data)).toBeTruthy();
+  });
+
+  test("Test getting a photo of student on Core Student Endpoint without Extra headers", async () => {
     let request = sentralSDK.getCoreCoreStudentForIdPhoto(
       { width: 1024, height: 1024 },
       { id: 4 },
@@ -128,7 +146,8 @@ describe("SentralSDK test Enrolments", () => {
       null,
       true
     );
+
     // Expect the request to be an image
-    return expect(request).resolves.toHaveProperty("data");
+    return expect(typeof (await request).data === "string").toBeTruthy();
   });
 });

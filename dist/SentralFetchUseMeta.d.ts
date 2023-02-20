@@ -19,5 +19,5 @@
 /**
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
-declare const fetchAllWithMeta: (url: string, apiToken: string, tenantCode: string, verbose: boolean | undefined, limit: number | null, includeString: string, chunkSize?: number, rawResponse?: boolean) => Promise<any[] | import("axios").AxiosResponse<any, any>>;
+declare const fetchAllWithMeta: (url: string, apiToken: string, tenantCode: string, verbose: boolean | undefined, limit: number | null, includeString: string, chunkSize?: number, rawResponse?: boolean, extraHeaders?: any, extraAxiosSettings?: any) => Promise<any[] | import("axios").AxiosResponse<any, any>>;
 export default fetchAllWithMeta;

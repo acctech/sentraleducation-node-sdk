@@ -31,18 +31,24 @@ const requestObj = (
   apiToken: string,
   tenantCode: string,
   ca: string | undefined,
-  json: boolean = true
+  rawResponse: boolean = true,
+  extraHeaders: any = {},
+  extraAxiosSettings: any = {}
 ): AxiosRequestConfig => ({
   method: "GET",
   url,
-  transformResponse: json ? (data) => JSON.parse(data) : (data) => data,
-  httpsAgent: new https.Agent({
-    ca: ca === undefined ? "" : ca,
-  }),
+  transformResponse: rawResponse ? (data) => data : undefined,
+  httpsAgent: ca
+    ? new https.Agent({
+        ca: ca === undefined ? "" : ca,
+      })
+    : undefined,
   headers: {
     "x-api-key": apiToken,
     "x-api-tenant": tenantCode,
+    ...extraHeaders,
   },
+  ...extraAxiosSettings,
   timeout: 360000,
 });
 
@@ -55,54 +61,30 @@ const fetchAll = (
   tenantCode: string,
   verbose: boolean,
   rawResponse: boolean = false,
+  extraHeaders: any = {},
+  extraAxiosSettings: any = {},
   result: any = []
 ): any =>
-  axios(requestObj(url, apiToken, tenantCode, "", !rawResponse)).then(
-    (response: any) => {
-      if (rawResponse) {
-        if (response) {
-          if (isIterable(response)) {
-            result = [...result, ...response];
-          } else {
-            result = [...result, response];
-          }
-
-          const links = response.data.links;
-          if (links) {
-            if (links.next) {
-              if (verbose) {
-                console.log(`Fetching ${links.next}`);
-              }
-              return fetchAll(
-                links.next,
-                apiToken,
-                tenantCode,
-                verbose,
-                rawResponse,
-                result
-              );
-            } else {
-              if (verbose) {
-                console.log(`Reached end of pagination.`);
-              }
-              return result;
-            }
-          } else {
-            return result;
-          }
+  axios(
+    requestObj(
+      url,
+      apiToken,
+      tenantCode,
+      undefined,
+      rawResponse,
+      extraHeaders,
+      extraAxiosSettings
+    )
+  ).then((response: any) => {
+    if (rawResponse) {
+      if (response) {
+        if (isIterable(response)) {
+          result = [...result, ...response];
         } else {
           result = [...result, response];
         }
-      }
 
-      if (response.data) {
-        if (isIterable(response.data.data)) {
-          result = [...result, ...response.data.data];
-        } else {
-          result = [...result, response.data.data];
-        }
         const links = response.data.links;
-        // console.log(links);
         if (links) {
           if (links.next) {
             if (verbose) {
@@ -114,6 +96,8 @@ const fetchAll = (
               tenantCode,
               verbose,
               rawResponse,
+              extraHeaders,
+              extraAxiosSettings,
               result
             );
           } else {
@@ -129,7 +113,43 @@ const fetchAll = (
         result = [...result, response];
       }
     }
-  );
+
+    if (response.data) {
+      if (isIterable(response.data.data)) {
+        result = [...result, ...response.data.data];
+      } else {
+        result = [...result, response.data.data];
+      }
+      const links = response.data.links;
+      // console.log(links);
+      if (links) {
+        if (links.next) {
+          if (verbose) {
+            console.log(`Fetching ${links.next}`);
+          }
+          return fetchAll(
+            links.next,
+            apiToken,
+            tenantCode,
+            verbose,
+            rawResponse,
+            extraHeaders,
+            extraAxiosSettings,
+            result
+          );
+        } else {
+          if (verbose) {
+            console.log(`Reached end of pagination.`);
+          }
+          return result;
+        }
+      } else {
+        return result;
+      }
+    } else {
+      result = [...result, response];
+    }
+  });
 
 const isIterable = function (obj: any) {
   // checks for null and undefined

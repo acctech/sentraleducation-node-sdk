@@ -25,6 +25,7 @@
   "author": "Danny Falero (Software Engineer, CEM)",
   "license": "AGPL-3.0-only",
   "dependencies": {
+    "@types/jest": "^29.4.0",
     "axios": "^1.3.3",
     "bottleneck": "^2.19.5",
     "dotenv": "^10.0.0",

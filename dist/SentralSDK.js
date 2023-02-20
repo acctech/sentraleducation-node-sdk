@@ -84,11 +84,11 @@ module.exports = function SentralSDK(auth, swaggerFolder, assetsFolderPath, verb
                         if (methodKey.toLowerCase() === "get") {
                             SDK[candidateNameForFunction] =
                                 helperFunctions.doesEndpointStringIncludeInserts(endpoint)
-                                    ? function (extraParameters, inserts, useMeta = false, chunkSize, rawResponse) {
-                                        return helperFunctions.runGetEndpointWithInsertsAndParams(endpoint, extraParameters, inserts, useMeta, chunkSize, rawResponse);
+                                    ? function (extraParameters, inserts, useMeta = false, chunkSize, rawResponse, extraHeaders, extraAxiosSettings) {
+                                        return helperFunctions.runGetEndpointWithInsertsAndParams(endpoint, extraParameters, inserts, useMeta, chunkSize, rawResponse, extraHeaders, extraAxiosSettings);
                                     }
-                                    : function (extraParameters, useMeta, chunkSize, rawResponse) {
-                                        return helperFunctions.runGetEndpointWithParams(endpoint, extraParameters, useMeta, chunkSize, rawResponse);
+                                    : function (extraParameters, useMeta, chunkSize, rawResponse, extraHeaders, extraAxiosSettings) {
+                                        return helperFunctions.runGetEndpointWithParams(endpoint, extraParameters, useMeta, chunkSize, rawResponse, extraHeaders, extraAxiosSettings);
                                     };
                         }
                     }
@@ -167,7 +167,7 @@ module.exports = function SentralSDK(auth, swaggerFolder, assetsFolderPath, verb
          * @param extraParameters
          * @returns {Promise<unknown>}
          */
-        runGetEndpointWithParams: function (endpoint, extraParameters, useMeta, chunkSize = 5, rawResponse = false) {
+        runGetEndpointWithParams: function (endpoint, extraParameters, useMeta, chunkSize = 5, rawResponse = false, extraHeaders = {}, extraAxiosSettings = {}) {
             if (!extraParameters) {
                 extraParameters = {};
             }
@@ -184,14 +184,14 @@ module.exports = function SentralSDK(auth, swaggerFolder, assetsFolderPath, verb
                 include = extraParameters.include;
             }
             if (useMeta) {
-                return (0, SentralFetchUseMeta_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, limit, include, chunkSize, rawResponse);
+                return (0, SentralFetchUseMeta_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, limit, include, chunkSize, rawResponse, extraHeaders, extraAxiosSettings);
             }
             else {
                 //Execute call and return
                 // Ignore ts error for now.
                 return (0, SentralFetch_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, 
                 // @ts-ignore
-                rawResponse);
+                rawResponse, extraHeaders, extraAxiosSettings);
             }
         },
         /**
@@ -201,7 +201,7 @@ module.exports = function SentralSDK(auth, swaggerFolder, assetsFolderPath, verb
          * @param inserts object
          * @returns {Promise<unknown>}
          */
-        runGetEndpointWithInsertsAndParams: function (endpoint, extraParameters, inserts, useMeta, chunkSize = 5, rawResponse = false) {
+        runGetEndpointWithInsertsAndParams: function (endpoint, extraParameters, inserts, useMeta, chunkSize = 5, rawResponse = false, extraHeaders = {}, extraAxiosSettings = {}) {
             if (!extraParameters) {
                 extraParameters = {};
             }
@@ -223,13 +223,13 @@ module.exports = function SentralSDK(auth, swaggerFolder, assetsFolderPath, verb
                 include = extraParameters.include;
             }
             if (useMeta) {
-                return (0, SentralFetchUseMeta_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, limit, include, chunkSize, rawResponse);
+                return (0, SentralFetchUseMeta_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, limit, include, chunkSize, rawResponse, extraHeaders, extraAxiosSettings);
             }
             else {
                 //Execute call and return
                 return (0, SentralFetch_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, 
                 // @ts-ignore
-                rawResponse);
+                rawResponse, extraHeaders, extraAxiosSettings);
             }
         },
     };

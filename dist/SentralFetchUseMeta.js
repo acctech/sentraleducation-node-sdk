@@ -34,19 +34,11 @@ const q_1 = __importDefault(require("q"));
 const axios_1 = __importDefault(require("axios"));
 const https_1 = __importDefault(require("https"));
 const CHUNK_DELAY_MS = 30;
-const requestObj = (url, apiToken, tenantCode, ca, json = true) => ({
-    method: "GET",
-    url,
-    transformResponse: json ? (data) => JSON.parse(data) : (data) => data,
-    httpsAgent: new https_1.default.Agent({
-        ca: ca === undefined ? "" : ca,
-    }),
-    headers: {
-        "x-api-key": apiToken,
-        "x-api-tenant": tenantCode,
-    },
-    timeout: 360000,
-});
+const requestObj = (url, apiToken, tenantCode, ca, rawResponse = true, extraHeaders = {}, extraAxiosSettings = {}) => (Object.assign(Object.assign({ method: "GET", url, transformResponse: rawResponse ? (data) => data : undefined, httpsAgent: ca
+        ? new https_1.default.Agent({
+            ca: ca === undefined ? "" : ca,
+        })
+        : undefined, headers: Object.assign({ "x-api-key": apiToken, "x-api-tenant": tenantCode }, extraHeaders) }, extraAxiosSettings), { timeout: 360000 }));
 /**
  * Merge the mainData array with the included data array to make one object.
  * @param {[]} mainDataArray
@@ -96,14 +88,14 @@ function mergeIncludedDataWithMainData(mainDataArray, includedDataArray) {
 /**
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
-const fetchAllWithMeta = (url, apiToken, tenantCode, verbose = false, limit, includeString, chunkSize = 10, rawResponse = false) => __awaiter(void 0, void 0, void 0, function* () {
+const fetchAllWithMeta = (url, apiToken, tenantCode, verbose = false, limit, includeString, chunkSize = 10, rawResponse = false, extraHeaders = {}, extraAxiosSettings = {}) => __awaiter(void 0, void 0, void 0, function* () {
     let data = [];
     // Default limit if none given
     if (limit === null) {
         limit = 10;
     }
     // Make first request.
-    let response = yield (0, axios_1.default)(requestObj(url, apiToken, tenantCode, undefined, !rawResponse));
+    let response = yield (0, axios_1.default)(requestObj(url, apiToken, tenantCode, undefined, rawResponse, extraHeaders, extraAxiosSettings));
     if (rawResponse) {
         return response;
     }
@@ -148,7 +140,7 @@ const fetchAllWithMeta = (url, apiToken, tenantCode, verbose = false, limit, inc
                 : i + chunkSize;
             requestArrayChunk = nextUrlsArray.slice(i, endSlice);
             let sliceReturnResponseArray = requestArrayChunk.map((requestUrl) => {
-                return (0, axios_1.default)(requestObj(requestUrl, apiToken, tenantCode, undefined));
+                return (0, axios_1.default)(requestObj(requestUrl, apiToken, tenantCode, undefined, rawResponse, extraHeaders, extraAxiosSettings));
             });
             responseArray = responseArray.concat((yield q_1.default.all(sliceReturnResponseArray)).map((response) => {
                 var _a, _b, _c;
