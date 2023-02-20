@@ -30,15 +30,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const request_promise_1 = __importDefault(require("request-promise"));
 const q_1 = __importDefault(require("q"));
+const axios_1 = __importDefault(require("axios"));
+const https_1 = __importDefault(require("https"));
 const CHUNK_DELAY_MS = 30;
 const requestObj = (url, apiToken, tenantCode, ca, json = true) => ({
     method: "GET",
-    uri: url,
-    json: json,
-    ca: ca === undefined ? "" : ca,
-    resolveWithFullResponse: true,
+    url,
+    transformResponse: json ? (data) => JSON.parse(data) : (data) => data,
+    httpsAgent: new https_1.default.Agent({
+        ca: ca === undefined ? "" : ca,
+    }),
     headers: {
         "x-api-key": apiToken,
         "x-api-tenant": tenantCode,
@@ -101,16 +103,16 @@ const fetchAllWithMeta = (url, apiToken, tenantCode, verbose = false, limit, inc
         limit = 10;
     }
     // Make first request.
-    let response = yield (0, request_promise_1.default)(requestObj(url, apiToken, tenantCode, undefined, !rawResponse));
+    let response = yield (0, axios_1.default)(requestObj(url, apiToken, tenantCode, undefined, !rawResponse));
     if (rawResponse) {
         return response;
     }
     // Use count to figure out max items
-    let totalItemCount = response.body.meta.count;
-    data = data.concat(response.body.data);
+    let totalItemCount = response.data.meta.count;
+    data = data.concat(response.data.data);
     // If there are keywords in the include string then merge the related objects into one
     if (includeString && includeString.length > 0) {
-        data = mergeIncludedDataWithMainData(response.body.data, response.body.included);
+        data = mergeIncludedDataWithMainData(response.data.data, response.data.included);
     }
     // console.log(JSON.stringify(data, null, 2));
     let nextUrlsArray = [];
@@ -146,15 +148,15 @@ const fetchAllWithMeta = (url, apiToken, tenantCode, verbose = false, limit, inc
                 : i + chunkSize;
             requestArrayChunk = nextUrlsArray.slice(i, endSlice);
             let sliceReturnResponseArray = requestArrayChunk.map((requestUrl) => {
-                return (0, request_promise_1.default)(requestObj(requestUrl, apiToken, tenantCode, undefined));
+                return (0, axios_1.default)(requestObj(requestUrl, apiToken, tenantCode, undefined));
             });
             responseArray = responseArray.concat((yield q_1.default.all(sliceReturnResponseArray)).map((response) => {
                 var _a, _b, _c;
                 if (includeString && includeString.length > 0) {
-                    return mergeIncludedDataWithMainData((_a = response === null || response === void 0 ? void 0 : response.body) === null || _a === void 0 ? void 0 : _a.data, (_b = response === null || response === void 0 ? void 0 : response.body) === null || _b === void 0 ? void 0 : _b.included);
+                    return mergeIncludedDataWithMainData((_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a.data, (_b = response === null || response === void 0 ? void 0 : response.data) === null || _b === void 0 ? void 0 : _b.included);
                 }
                 else {
-                    return (_c = response === null || response === void 0 ? void 0 : response.body) === null || _c === void 0 ? void 0 : _c.data;
+                    return (_c = response === null || response === void 0 ? void 0 : response.data) === null || _c === void 0 ? void 0 : _c.data;
                 }
             }));
             yield q_1.default.delay(CHUNK_DELAY_MS);

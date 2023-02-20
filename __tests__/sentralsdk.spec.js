@@ -117,7 +117,7 @@ describe("SentralSDK test Enrolments", () => {
     );
 
     // Check the length
-    return expect(request).resolves.toHaveProperty("body");
+    return expect(request).resolves.toHaveProperty("data");
   });
 
   test("Test getting a photo of student on Core Student Endpoint", () => {
@@ -129,6 +129,6 @@ describe("SentralSDK test Enrolments", () => {
       true
     );
     // Expect the request to be an image
-    return expect(request).resolves.toHaveProperty("body");
+    return expect(request).resolves.toHaveProperty("data");
   });
 });

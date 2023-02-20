@@ -17,8 +17,9 @@
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
 
-import request from "request-promise";
 import q from "q";
+import axios, { AxiosRequestConfig } from "axios";
+import https from "https";
 
 const CHUNK_DELAY_MS = 30;
 
@@ -28,12 +29,13 @@ const requestObj = (
   tenantCode: string,
   ca: string | undefined,
   json: boolean = true
-) => ({
+): AxiosRequestConfig => ({
   method: "GET",
-  uri: url,
-  json: json,
-  ca: ca === undefined ? "" : ca,
-  resolveWithFullResponse: true,
+  url,
+  transformResponse: json ? (data) => JSON.parse(data) : (data) => data,
+  httpsAgent: new https.Agent({
+    ca: ca === undefined ? "" : ca,
+  }),
   headers: {
     "x-api-key": apiToken,
     "x-api-tenant": tenantCode,
@@ -126,7 +128,7 @@ const fetchAllWithMeta = async (
   }
 
   // Make first request.
-  let response = await request(
+  let response = await axios(
     requestObj(url, apiToken, tenantCode, undefined, !rawResponse)
   );
 
@@ -135,14 +137,14 @@ const fetchAllWithMeta = async (
   }
 
   // Use count to figure out max items
-  let totalItemCount = response.body.meta.count;
-  data = data.concat(response.body.data);
+  let totalItemCount = response.data.meta.count;
+  data = data.concat(response.data.data);
 
   // If there are keywords in the include string then merge the related objects into one
   if (includeString && includeString.length > 0) {
     data = mergeIncludedDataWithMainData(
-      response.body.data,
-      response.body.included
+      response.data.data,
+      response.data.included
     );
   }
 
@@ -185,17 +187,17 @@ const fetchAllWithMeta = async (
           : i + chunkSize;
       requestArrayChunk = nextUrlsArray.slice(i, endSlice);
       let sliceReturnResponseArray = requestArrayChunk.map((requestUrl) => {
-        return request(requestObj(requestUrl, apiToken, tenantCode, undefined));
+        return axios(requestObj(requestUrl, apiToken, tenantCode, undefined));
       });
       responseArray = responseArray.concat(
         (await q.all(sliceReturnResponseArray)).map((response) => {
           if (includeString && includeString.length > 0) {
             return mergeIncludedDataWithMainData(
-              response?.body?.data,
-              response?.body?.included
+              response?.data?.data,
+              response?.data?.included
             );
           } else {
-            return response?.body?.data;
+            return response?.data?.data;
           }
         })
       );

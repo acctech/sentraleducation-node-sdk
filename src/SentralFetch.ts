@@ -17,8 +17,9 @@
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
 
-import request from "request-promise";
 import Bottleneck from "bottleneck";
+import axios, { AxiosRequestConfig } from "axios";
+import https from "https";
 
 const limiter = new Bottleneck({
   maxConcurrent: 200,
@@ -29,14 +30,15 @@ const requestObj = (
   url: string,
   apiToken: string,
   tenantCode: string,
-  ca: string,
+  ca: string | undefined,
   json: boolean = true
-) => ({
+): AxiosRequestConfig => ({
   method: "GET",
-  uri: url,
-  json: json,
-  ca: ca === undefined ? "" : ca,
-  resolveWithFullResponse: true,
+  url,
+  transformResponse: json ? (data) => JSON.parse(data) : (data) => data,
+  httpsAgent: new https.Agent({
+    ca: ca === undefined ? "" : ca,
+  }),
   headers: {
     "x-api-key": apiToken,
     "x-api-tenant": tenantCode,
@@ -55,7 +57,7 @@ const fetchAll = (
   rawResponse: boolean = false,
   result: any = []
 ): any =>
-  request(requestObj(url, apiToken, tenantCode, "", !rawResponse)).then(
+  axios(requestObj(url, apiToken, tenantCode, "", !rawResponse)).then(
     (response: any) => {
       if (rawResponse) {
         if (response) {
@@ -65,7 +67,7 @@ const fetchAll = (
             result = [...result, response];
           }
 
-          const links = response.body.links;
+          const links = response.data.links;
           if (links) {
             if (links.next) {
               if (verbose) {
@@ -93,13 +95,13 @@ const fetchAll = (
         }
       }
 
-      if (response.body) {
-        if (isIterable(response.body.data)) {
-          result = [...result, ...response.body.data];
+      if (response.data) {
+        if (isIterable(response.data.data)) {
+          result = [...result, ...response.data.data];
         } else {
-          result = [...result, response.body.data];
+          result = [...result, response.data.data];
         }
-        const links = response.body.links;
+        const links = response.data.links;
         // console.log(links);
         if (links) {
           if (links.next) {

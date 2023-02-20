@@ -21,18 +21,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const request_promise_1 = __importDefault(require("request-promise"));
 const bottleneck_1 = __importDefault(require("bottleneck"));
+const axios_1 = __importDefault(require("axios"));
+const https_1 = __importDefault(require("https"));
 const limiter = new bottleneck_1.default({
     maxConcurrent: 200,
     minTime: 1,
 });
 const requestObj = (url, apiToken, tenantCode, ca, json = true) => ({
     method: "GET",
-    uri: url,
-    json: json,
-    ca: ca === undefined ? "" : ca,
-    resolveWithFullResponse: true,
+    url,
+    transformResponse: json ? (data) => JSON.parse(data) : (data) => data,
+    httpsAgent: new https_1.default.Agent({
+        ca: ca === undefined ? "" : ca,
+    }),
     headers: {
         "x-api-key": apiToken,
         "x-api-tenant": tenantCode,
@@ -42,7 +44,7 @@ const requestObj = (url, apiToken, tenantCode, ca, json = true) => ({
 /**
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
-const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, result = []) => (0, request_promise_1.default)(requestObj(url, apiToken, tenantCode, "", !rawResponse)).then((response) => {
+const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, result = []) => (0, axios_1.default)(requestObj(url, apiToken, tenantCode, "", !rawResponse)).then((response) => {
     if (rawResponse) {
         if (response) {
             if (isIterable(response)) {
@@ -51,7 +53,7 @@ const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, resul
             else {
                 result = [...result, response];
             }
-            const links = response.body.links;
+            const links = response.data.links;
             if (links) {
                 if (links.next) {
                     if (verbose) {
@@ -74,14 +76,14 @@ const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, resul
             result = [...result, response];
         }
     }
-    if (response.body) {
-        if (isIterable(response.body.data)) {
-            result = [...result, ...response.body.data];
+    if (response.data) {
+        if (isIterable(response.data.data)) {
+            result = [...result, ...response.data.data];
         }
         else {
-            result = [...result, response.body.data];
+            result = [...result, response.data.data];
         }
-        const links = response.body.links;
+        const links = response.data.links;
         // console.log(links);
         if (links) {
             if (links.next) {
