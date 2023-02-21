@@ -84,30 +84,35 @@ const fetchAll = (
           result = [...result, response];
         }
 
-        const links = response.data.links;
-        if (links) {
-          if (links.next) {
-            if (verbose) {
-              console.log(`Fetching ${links.next}`);
+        // Try and see if there's a links object for pagination
+        try {
+          const links = JSON.parse(response.data)?.links;
+          if (links) {
+            if (links.next) {
+              if (verbose) {
+                console.log(`Fetching ${links.next}`);
+              }
+              return fetchAll(
+                links.next,
+                apiToken,
+                tenantCode,
+                verbose,
+                rawResponse,
+                extraHeaders,
+                extraAxiosSettings,
+                result
+              );
+            } else {
+              if (verbose) {
+                console.log(`Reached end of pagination.`);
+              }
+              return result;
             }
-            return fetchAll(
-              links.next,
-              apiToken,
-              tenantCode,
-              verbose,
-              rawResponse,
-              extraHeaders,
-              extraAxiosSettings,
-              result
-            );
           } else {
-            if (verbose) {
-              console.log(`Reached end of pagination.`);
-            }
             return result;
           }
-        } else {
-          return result;
+        } catch (e) {
+          console.log(e);
         }
       } else {
         result = [...result, response];

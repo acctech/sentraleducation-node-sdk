@@ -37,6 +37,7 @@ const requestObj = (url, apiToken, tenantCode, ca, rawResponse = true, extraHead
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
 const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, extraHeaders = {}, extraAxiosSettings = {}, result = []) => (0, axios_1.default)(requestObj(url, apiToken, tenantCode, undefined, rawResponse, extraHeaders, extraAxiosSettings)).then((response) => {
+    var _a;
     if (rawResponse) {
         if (response) {
             if (isIterable(response)) {
@@ -45,23 +46,29 @@ const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, extra
             else {
                 result = [...result, response];
             }
-            const links = response.data.links;
-            if (links) {
-                if (links.next) {
-                    if (verbose) {
-                        console.log(`Fetching ${links.next}`);
+            // Try and see if there's a links object for pagination
+            try {
+                const links = (_a = JSON.parse(response.data)) === null || _a === void 0 ? void 0 : _a.links;
+                if (links) {
+                    if (links.next) {
+                        if (verbose) {
+                            console.log(`Fetching ${links.next}`);
+                        }
+                        return fetchAll(links.next, apiToken, tenantCode, verbose, rawResponse, extraHeaders, extraAxiosSettings, result);
                     }
-                    return fetchAll(links.next, apiToken, tenantCode, verbose, rawResponse, extraHeaders, extraAxiosSettings, result);
+                    else {
+                        if (verbose) {
+                            console.log(`Reached end of pagination.`);
+                        }
+                        return result;
+                    }
                 }
                 else {
-                    if (verbose) {
-                        console.log(`Reached end of pagination.`);
-                    }
                     return result;
                 }
             }
-            else {
-                return result;
+            catch (e) {
+                console.log(e);
             }
         }
         else {

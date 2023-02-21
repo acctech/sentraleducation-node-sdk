@@ -82,14 +82,9 @@ module.exports = function SentralSDK(auth, swaggerFolder, assetsFolderPath, verb
                         };
                         //Add the method function
                         if (methodKey.toLowerCase() === "get") {
-                            SDK[candidateNameForFunction] =
-                                helperFunctions.doesEndpointStringIncludeInserts(endpoint)
-                                    ? function (extraParameters, inserts, useMeta = false, chunkSize, rawResponse, extraHeaders, extraAxiosSettings) {
-                                        return helperFunctions.runGetEndpointWithInsertsAndParams(endpoint, extraParameters, inserts, useMeta, chunkSize, rawResponse, extraHeaders, extraAxiosSettings);
-                                    }
-                                    : function (extraParameters, useMeta, chunkSize, rawResponse, extraHeaders, extraAxiosSettings) {
-                                        return helperFunctions.runGetEndpointWithParams(endpoint, extraParameters, useMeta, chunkSize, rawResponse, extraHeaders, extraAxiosSettings);
-                                    };
+                            SDK[candidateNameForFunction] = function (config) {
+                                return helperFunctions.runGetEndpointWithInsertsAndParams(Object.assign(Object.assign({}, config), { endpoint }));
+                            };
                         }
                     }
                 }
@@ -164,72 +159,54 @@ module.exports = function SentralSDK(auth, swaggerFolder, assetsFolderPath, verb
         },
         /**
          *
-         * @param extraParameters
-         * @returns {Promise<unknown>}
-         */
-        runGetEndpointWithParams: function (endpoint, extraParameters, useMeta, chunkSize = 5, rawResponse = false, extraHeaders = {}, extraAxiosSettings = {}) {
-            if (!extraParameters) {
-                extraParameters = {};
-            }
-            // extraParameters.limit = 200;
-            let url = domain + "/restapi" + endpoint;
-            let uri = this.processQueryParamaters(url, extraParameters);
-            let extraParamKeys = Object.keys(extraParameters);
-            let limit = null;
-            if (extraParamKeys.includes("limit")) {
-                limit = parseInt(extraParameters.limit);
-            }
-            let include = null;
-            if (extraParamKeys.includes("include")) {
-                include = extraParameters.include;
-            }
-            if (useMeta) {
-                return (0, SentralFetchUseMeta_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, limit, include, chunkSize, rawResponse, extraHeaders, extraAxiosSettings);
-            }
-            else {
-                //Execute call and return
-                // Ignore ts error for now.
-                return (0, SentralFetch_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, 
-                // @ts-ignore
-                rawResponse, extraHeaders, extraAxiosSettings);
-            }
-        },
-        /**
-         *
          * @param endpoint string "/v1/endpoint/{id}/endpoint"
          * @param extraParameters object
          * @param inserts object
          * @returns {Promise<unknown>}
          */
-        runGetEndpointWithInsertsAndParams: function (endpoint, extraParameters, inserts, useMeta, chunkSize = 5, rawResponse = false, extraHeaders = {}, extraAxiosSettings = {}) {
-            if (!extraParameters) {
-                extraParameters = {};
+        runGetEndpointWithInsertsAndParams: function (config) {
+            if (!config.endpoint) {
+                throw "Missing endpoint";
             }
-            if (inserts) {
-                for (const insertsKey in inserts) {
-                    //replace key with insert
-                    endpoint = endpoint.replace("{" + insertsKey + "}", inserts[insertsKey]);
+            if (config.useMeta === undefined) {
+                config.useMeta = true;
+            }
+            if (config.chunkSize === undefined) {
+                config.chunkSize = 5;
+            }
+            if (!config.extraParameters) {
+                config.extraParameters = {};
+            }
+            if (helperFunctions.doesEndpointStringIncludeInserts(config.endpoint)) {
+                if (config.inserts) {
+                    for (const insertsKey in config.inserts) {
+                        //replace key with insert
+                        config.endpoint = config.endpoint.replace("{" + insertsKey + "}", config.inserts[insertsKey]);
+                    }
+                }
+                else {
+                    throw "Missing inserts";
                 }
             }
-            let url = domain + "/restapi" + endpoint;
-            let uri = this.processQueryParamaters(url, extraParameters);
-            let extraParamKeys = Object.keys(extraParameters);
+            let url = domain + "/restapi" + config.endpoint;
+            let uri = this.processQueryParamaters(url, config.extraParameters);
+            let extraParamKeys = Object.keys(config.extraParameters);
             let limit = null;
             if (extraParamKeys.includes("limit")) {
-                limit = parseInt(extraParameters.limit);
+                limit = parseInt(config.extraParameters.limit);
             }
             let include = null;
             if (extraParamKeys.includes("include")) {
-                include = extraParameters.include;
+                include = config.extraParameters.include;
             }
-            if (useMeta) {
-                return (0, SentralFetchUseMeta_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, limit, include, chunkSize, rawResponse, extraHeaders, extraAxiosSettings);
+            if (config.useMeta) {
+                return (0, SentralFetchUseMeta_js_1.default)(uri, apiKey, tenantCode, isVERBOSE || config.verbose, limit, include, config.chunkSize, config.rawResponse, config.extraHeaders, config.extraAxiosSettings);
             }
             else {
                 //Execute call and return
-                return (0, SentralFetch_js_1.default)(uri, apiKey, tenantCode, isVERBOSE, 
+                return (0, SentralFetch_js_1.default)(uri, apiKey, tenantCode, isVERBOSE || config.verbose, 
                 // @ts-ignore
-                rawResponse, extraHeaders, extraAxiosSettings);
+                config.rawResponse, config.extraHeaders, config.extraAxiosSettings);
             }
         },
     };
