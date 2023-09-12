@@ -46,6 +46,7 @@ const requestObj = (
   headers: {
     "x-api-key": apiToken,
     "x-api-tenant": tenantCode,
+    "User-Agent": "SentralNodeSDK",
     ...extraHeaders,
   },
   ...extraAxiosSettings,
@@ -84,7 +85,7 @@ const fetchAll = (
           result = [...result, response];
         }
 
-        // Try and see if there's a links object for pagination
+        // Try and see if there's a links object for pagination (Response is raw text response here)
         try {
           const links = JSON.parse(response.data)?.links;
           if (links) {

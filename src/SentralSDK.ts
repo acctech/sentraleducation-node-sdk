@@ -38,7 +38,7 @@ interface EndpointConfig {
   verbose: boolean;
 }
 
-export = function SentralSDK(
+export = async function SentralSDK(
   this: any,
   auth: {
     sentralAPIKey: string;
@@ -66,7 +66,7 @@ export = function SentralSDK(
    * @param {String} swaggerFolder Folder to read the swagger.json documentation from.
    * @returns
    */
-  function initiateSDKFromSwaggerFile(
+  async function initiateSDKFromSwaggerFile(
     swaggerFolder: string,
     assetsFolderPath: string,
     verbose = false
@@ -77,9 +77,9 @@ export = function SentralSDK(
     let sdkMetaCache = Cacher(ASSETSFOLDERPATH);
     try {
       if (!fs.existsSync(path.join(ASSETSFOLDERPATH, "endpoints.json"))) {
-        generateEndpointsFile(Cacher(ASSETSFOLDERPATH), swaggerFolder);
+        await generateEndpointsFile(Cacher(ASSETSFOLDERPATH), swaggerFolder);
       }
-      let endpointMetaDataFull = sdkMetaCache.load("endpoints");
+      let endpointMetaDataFull: any = await sdkMetaCache.load("endpoints");
       let endpoints = Object.keys(endpointMetaDataFull);
       for (let i = 0; i < endpoints.length; i++) {
         let endpoint = endpoints[i];
@@ -133,7 +133,7 @@ export = function SentralSDK(
         }
       }
       //Save SDK meta.
-      saveSDKMeta(endpoints, SDK);
+      await saveSDKMeta(endpoints, SDK);
       console.log("SDK Loaded");
       //Return this for chaining.
       return sentralSDKInstance;
@@ -144,9 +144,9 @@ export = function SentralSDK(
 
   const helperFunctions = {
     retrieveInsertsNames: function (endpointString: string) {
-      let inserts = endpointString.match(/{([^}]*)}/g);
+      let inserts: any = endpointString.match(/{([^}]*)}/g);
       if (inserts) {
-        inserts = inserts.map((insert) => insert.replace(/[{}]/g, ""));
+        inserts = inserts.map((insert: any) => insert.replace(/[{}]/g, ""));
       }
       return inserts;
     },
@@ -299,18 +299,18 @@ export = function SentralSDK(
   }
 
   // Convert Swagger to Endpoints File
-  function generateEndpointsFile(
+  async function generateEndpointsFile(
     assetsCacher: any,
     folderPathOfSwaggerJSON: string
   ) {
     let sentralSwagger = SwaggerFileImporter(folderPathOfSwaggerJSON);
     let sentralEndpoints = sentralSwagger.getEndpointFullDetails();
-    assetsCacher.save("endpoints", sentralEndpoints);
+    await assetsCacher.save("endpoints", sentralEndpoints);
   }
 
-  function saveSDKMeta(endpoints: string[], SDK: any) {
+  async function saveSDKMeta(endpoints: string[], SDK: any) {
     let sdkMetaCache = Cacher(ASSETSFOLDERPATH);
-    sdkMetaCache.save("META", { endpoints, SDK });
+    await sdkMetaCache.save("META", { endpoints, SDK });
     // Write a common JS file that can be imported for reference.
     try {
       let cjsContent =
@@ -323,16 +323,16 @@ export = function SentralSDK(
     }
   }
 
-  function loadSDKMeta() {
+  async function loadSDKMeta(): Promise<any> {
     let sdkMetaCache = Cacher(ASSETSFOLDERPATH);
-    return sdkMetaCache.load("META");
+    return await sdkMetaCache.load("META");
   }
-  function querySDKMeta(callback: Function) {
-    callback(loadSDKMeta());
+  async function querySDKMeta(callback: Function) {
+    callback(await loadSDKMeta());
   }
 
   // Initiating SDK from Swagger.json documentation.
-  initiateSDKFromSwaggerFile(swaggerFolder, assetsFolderPath, verbose);
+  await initiateSDKFromSwaggerFile(swaggerFolder, assetsFolderPath, verbose);
 
   return {
     getSDK,

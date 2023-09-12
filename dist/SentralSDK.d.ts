@@ -20,8 +20,8 @@ declare const _default: (this: any, auth: {
     sentralAPIKey: string;
     sentralTenantSchoolCode: string;
     domain: string;
-}, swaggerFolder: string, assetsFolderPath: string, verbose?: boolean) => {
+}, swaggerFolder: string, assetsFolderPath: string, verbose?: boolean) => Promise<{
     getSDK: () => any;
-    querySDKMeta: (callback: Function) => void;
-};
+    querySDKMeta: (callback: Function) => Promise<void>;
+}>;
 export = _default;

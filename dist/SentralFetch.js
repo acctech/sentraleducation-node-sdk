@@ -32,7 +32,7 @@ const requestObj = (url, apiToken, tenantCode, ca, rawResponse = true, extraHead
         ? new https_1.default.Agent({
             ca: ca === undefined ? "" : ca,
         })
-        : undefined, headers: Object.assign({ "x-api-key": apiToken, "x-api-tenant": tenantCode }, extraHeaders) }, extraAxiosSettings), { timeout: 360000 }));
+        : undefined, headers: Object.assign({ "x-api-key": apiToken, "x-api-tenant": tenantCode, "User-Agent": "SentralNodeSDK" }, extraHeaders) }, extraAxiosSettings), { timeout: 360000 }));
 /**
  * https://raw.githubusercontent.com/acctech/kingjames.bible/master/kjv-src/kjv-1769.txt
  */
@@ -46,7 +46,7 @@ const fetchAll = (url, apiToken, tenantCode, verbose, rawResponse = false, extra
             else {
                 result = [...result, response];
             }
-            // Try and see if there's a links object for pagination
+            // Try and see if there's a links object for pagination (Response is raw text response here)
             try {
                 const links = (_a = JSON.parse(response.data)) === null || _a === void 0 ? void 0 : _a.links;
                 if (links) {

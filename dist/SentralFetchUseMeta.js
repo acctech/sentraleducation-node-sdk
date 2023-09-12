@@ -38,7 +38,7 @@ const requestObj = (url, apiToken, tenantCode, ca, rawResponse = true, extraHead
         ? new https_1.default.Agent({
             ca: ca === undefined ? "" : ca,
         })
-        : undefined, headers: Object.assign({ "x-api-key": apiToken, "x-api-tenant": tenantCode }, extraHeaders) }, extraAxiosSettings), { timeout: 360000 }));
+        : undefined, headers: Object.assign({ "x-api-key": apiToken, "x-api-tenant": tenantCode, "User-Agent": "SentralNodeSDK" }, extraHeaders) }, extraAxiosSettings), { timeout: 360000 }));
 /**
  * Merge the mainData array with the included data array to make one object.
  * @param {[]} mainDataArray

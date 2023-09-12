@@ -43,6 +43,7 @@ const requestObj = (
   headers: {
     "x-api-key": apiToken,
     "x-api-tenant": tenantCode,
+    "User-Agent": "SentralNodeSDK",
     ...extraHeaders,
   },
   ...extraAxiosSettings,
