@@ -152,6 +152,10 @@ const fetchAllWithMeta = async (
     return response;
   }
 
+  if (!response?.data.data || !response?.data.meta) {
+    return response.data;
+  }
+
   // Use count to figure out max items
   let totalItemCount = response.data.meta.count;
   data = data.concat(response.data.data);

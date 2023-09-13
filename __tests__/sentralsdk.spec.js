@@ -70,6 +70,67 @@ describe("SentralSDK Swagger File", () => {
   });
 });
 
+describe("SentralSDK test getting schemas", () => {
+  let SENTRAL_DOMAIN = process.env.SENTRAL_DOMAIN;
+  let SENTRAL_TENANT_KEY = process.env.SENTRAL_TENANT_KEY;
+  let SENTRAL_API_KEY = process.env.SENTRAL_API_KEY;
+  let SENTRAL_TENANT_NUMBERCODE_FOR_TESTING =
+    process.env.SENTRAL_TENANT_NUMBERCODE_FOR_TESTING;
+
+  let auth = {
+    sentralAPIKey: SENTRAL_API_KEY,
+    sentralTenantSchoolCode: SENTRAL_TENANT_KEY,
+    domain: SENTRAL_DOMAIN,
+  };
+
+  // Initiate the SDK (this will inflate the SDK from the
+  // open api json from development.sentral.com.au)
+  let pathToOpenAPIJsonFileFromSentral = "./";
+  let assetsFolder = "./assets";
+
+  beforeAll(async () => {
+    // Initialize the SDK and any other setup that needs to be done asynchronously
+    let Sentral = await SentralSDK(
+      auth,
+      pathToOpenAPIJsonFileFromSentral,
+      assetsFolder,
+      true
+    );
+    let sentralSDK = Sentral.getSDK();
+
+    // Assign sentralSDK to a variable accessible in all tests
+    global.sentralSDK = sentralSDK;
+  });
+
+  it("should get sentral schema", async () => {
+    let request = await global.sentralSDK.getSentralSchema({});
+
+    // Expect the request to be string testing that pagination is not used without error
+    return expect(typeof request === "object").toBeTruthy();
+  });
+
+  it("should get sentral schema namespaces", async () => {
+    let request = await global.sentralSDK.getSentralSchema({});
+
+    // Expect the request to be string testing that pagination is not used without error
+    return expect(typeof request === "object").toBeTruthy();
+  });
+
+  it("should get sentral schema action summaries", async () => {
+    let request = await global.sentralSDK.getSentralSchemaActionSummary({});
+
+    // Expect the request to be string testing that pagination is not used without error
+    return expect(typeof request === "object").toBeTruthy();
+  });
+
+  it("should get sentral schema model summaries", async () => {
+    let request = await global.sentralSDK.getSentralSchemaModelSummary({});
+
+    // Expect the request to be string testing that pagination is not used without error
+    return expect(typeof request === "object").toBeTruthy();
+  });
+});
+
 describe("SentralSDK test Enrolments", () => {
   let SENTRAL_DOMAIN = process.env.SENTRAL_DOMAIN;
   let SENTRAL_TENANT_KEY = process.env.SENTRAL_TENANT_KEY;
@@ -165,6 +226,7 @@ describe("SentralSDK test Enrolments", () => {
       },
       useMeta: false,
       rawResponse: false,
+      verbose: true,
     });
 
     // Check the length

@@ -99,6 +99,9 @@ const fetchAllWithMeta = (url, apiToken, tenantCode, verbose = false, limit, inc
     if (rawResponse) {
         return response;
     }
+    if (!(response === null || response === void 0 ? void 0 : response.data.data) || !(response === null || response === void 0 ? void 0 : response.data.meta)) {
+        return response.data;
+    }
     // Use count to figure out max items
     let totalItemCount = response.data.meta.count;
     data = data.concat(response.data.data);
